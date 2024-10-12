@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DeviantCoding.Registerly.SelfRegistration.Strategies;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DeviantCoding.Registerly.SelfRegistration.Scanning
 {
@@ -64,6 +60,34 @@ namespace DeviantCoding.Registerly.SelfRegistration.Scanning
         internal static bool HasAttribute<T>(this Type type, Func<T, bool> predicate) where T : Attribute
         {
             return type.GetCustomAttributes<T>(inherit: true).Any(predicate);
+        }
+
+        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsNonAbstractClass(publicOnly: false) && type.IsDefined(typeof(RegisterAttribute), true);
+
+        internal static RegisterAttribute? GetAutoRegistrationAttribute(this Type type)
+        {
+            if (!type.IsNonAbstractClass(publicOnly: false))
+            {
+                return null;
+            }
+
+            var allCustomAttributes = type
+                    .GetCustomAttributes(true);
+
+            foreach (var attribute in allCustomAttributes)
+            {
+                var attributeType = attribute.GetType();
+                var t = attributeType;
+                while (t != null)
+                {
+                    if (t == typeof(RegisterAttribute))
+                    {
+                        return (RegisterAttribute) attribute;
+                    }
+                    t = t.BaseType;
+                }
+            }
+            return null;
         }
     }
 }

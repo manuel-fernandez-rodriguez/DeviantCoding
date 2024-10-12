@@ -9,17 +9,22 @@ public static class SelfRegistrationExtensions
 {
     public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app)
     {
-        _ = app.Services.AutoRegisterServices();
+        _ = app.Services.AutoRegisterServices(TypeSelector.FromDependencyContext());
         return app;
     }
 
-    private static IServiceCollection AutoRegisterServices(this IServiceCollection serviceCollection)
+    public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
-        var implementationsToRegister = new AutoRegisterTypeSelector().FromDependencyContext();
+        _ = app.Services.AutoRegisterServices(TypeSelector.FromAssemblies(assemblies));
+        return app;
+    }
 
+    private static IServiceCollection AutoRegisterServices(this IServiceCollection serviceCollection, IEnumerable<Type> implementationsToRegister)
+    {
+        
         foreach (var implementation in implementationsToRegister)
         {
-            var attribute = implementation.GetCustomAttribute<RegisterAsAttribute>()!;
+            var attribute = implementation.GetCustomAttribute<RegisterAttribute>()!;
             var (strategy, lifetime) = (attribute.RegistrationStrategy, attribute.ServiceLifetime);
             strategy.RegisterServices(serviceCollection, implementation, lifetime);
         }

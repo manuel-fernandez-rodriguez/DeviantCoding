@@ -2,12 +2,10 @@
 using System;
 using System.Reflection;
 
-namespace DeviantCoding.Registerly.SelfRegistration.Mapping
+namespace DeviantCoding.Registerly.SelfRegistration.Strategies
 {
-    public class AsImplementedInterfaces : IRegistrationStrategy<AsImplementedInterfaces>
+    public class AsImplementedInterfaces : IRegistrationStrategy
     {
-        public static AsImplementedInterfaces Instance { get; } = new AsImplementedInterfaces();
-
         public IServiceCollection RegisterServices(IServiceCollection serviceCollection, Type implementation, ServiceLifetime serviceLifetime)
         {
             var services = implementation.GetInterfaces();
