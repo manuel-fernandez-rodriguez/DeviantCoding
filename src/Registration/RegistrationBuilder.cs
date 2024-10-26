@@ -30,7 +30,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
 
     public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
 
-    public IClassSourceQueryable Where(Func<Type, bool> predicate)
+    IClassSourceQueryable IClassSourceResult.Where(Func<Type, bool> predicate)
     {
         var task = Tasks.LastOrDefault();
         if (task != null)
@@ -40,7 +40,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
         return this;
     }
 
-    public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
+    IClassSourceResult IClassSelector.AndAlso(ClassFilterDelegate predicate)
     {
         if (Tasks.Count == 0)
         {
@@ -50,7 +50,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
         return Tasks.AddNew(Tasks.Last().SourceSelector, predicate); ;
     }
 
-    public UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
+    UsingResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
     {
         foreach (var task in Tasks)
         {
@@ -61,21 +61,21 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
         return this;
     }
 
-    public ILifetimeDefinitionResult WithLifetime(ILifetimeStrategy serviceLifetime)
+    ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy serviceLifetime)
     {
-        Using(serviceLifetime, null!, null!);
+        IClassSourceResult.Using(serviceLifetime, null!, null!);
         return this;
     }
 
-    public IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy mappingStrategy)
+    IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy)
     {
-        Using(null!, mappingStrategy, null!);
+        IClassSourceResult.Using(null!, mappingStrategy, null!);
         return this;
     }
 
-    public IMappingStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
+    IMappingStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
     {
-        Using(null!, null!, registrationStrategy);
+        IClassSourceResult.Using(null!, null!, registrationStrategy);
         return this;
     }
 
@@ -96,6 +96,8 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
 
         return _serviceCollection;
     }
+
+    IClassSourceResult IClassSourceResult => this;
 
     Type IQueryable.ElementType { get; } = typeof(Type);
 
