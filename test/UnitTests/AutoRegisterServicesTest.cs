@@ -1,5 +1,4 @@
-using DeviantCoding.Registerly.SelfRegistration;
-using DeviantCoding.Registerly.SelfRegistration.Strategies;
+using DeviantCoding.Registerly.UnitTests.SampleServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -45,43 +44,18 @@ public class AutoRegisterServicesTest
 
     private static void Assert(IServiceCollection services)
     {
-        services.Should().HaveService<IScopedService>()
+        services.Should().HaveSingleService<IScopedService>()
             .WithImplementation<TestScopedService>()
             .WithLifetime(ServiceLifetime.Scoped);
 
-        services.Should().HaveService<ITransientService>()
+        services.Should().HaveSingleService<ITransientService>()
             .WithImplementation<TestTransientService>()
             .WithLifetime(ServiceLifetime.Transient);
 
-        services.Should().HaveService<ISingletonService>()
+        services.Should().HaveSingleService<ISingletonService>()
             .WithImplementation<TestSingletonService>()
             .WithLifetime(ServiceLifetime.Singleton);
     }
 
-    [Singleton<AsSelf>]
-    public class TestServiceDependency { }
-
-    public interface IScopedService { }
-
-    [Scoped]
-    public class TestScopedService(TestServiceDependency serviceDependency) : IScopedService
-    {
-        private readonly TestServiceDependency _serviceDependency = serviceDependency;
-    }
-
-    public interface ITransientService { }
-
-    [Transient]
-    public class TestTransientService(TestServiceDependency serviceDependency) : ITransientService
-    {
-        private readonly TestServiceDependency _serviceDependency = serviceDependency;
-    }
-
-    public interface ISingletonService { }
-
-    [Singleton]
-    public class TestSingletonService(TestServiceDependency serviceDependency) : ISingletonService
-    {
-        private readonly TestServiceDependency _serviceDependency = serviceDependency;
-    }
+    
 }

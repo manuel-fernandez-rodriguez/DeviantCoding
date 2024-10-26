@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 
-namespace DeviantCoding.Registerly.SelfRegistration.Scanning;
+namespace DeviantCoding.Registerly.Scanning;
 
 internal class AssemblyLoader
 {
-    private static readonly Func<Type, bool> DefaultFilter = t => t.IsMarkedForAutoRegistration();
+    private static readonly Func<Type, bool> DefaultFilter = t => t.IsRegistrable();
 
     private readonly Func<Type, bool> _defaultFilter = DefaultFilter;
 
@@ -15,7 +15,7 @@ internal class AssemblyLoader
 
     public AssemblyLoader() : this(DefaultFilter)
     {
-        
+
     }
 
     public IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, Func<Type, bool> typeFilter)

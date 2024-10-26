@@ -1,6 +1,6 @@
-﻿using DeviantCoding.Registerly.SelfRegistration.Strategies;
+﻿using DeviantCoding.Registerly.Strategies;
+using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
 namespace DeviantCoding.Registerly.SelfRegistration;
 
@@ -9,7 +9,7 @@ public class TransientAttribute() : RegisterAttribute<AsImplementedInterfaces>(S
 
 [AttributeUsage(AttributeTargets.Class)]
 public class TransientAttribute<TRegistrationStrategy>() : RegisterAttribute<TRegistrationStrategy>(ServiceLifetime.Transient)
-    where TRegistrationStrategy : IRegistrationStrategy, new();
+    where TRegistrationStrategy : IMappingStrategy, new();
 
 
 [AttributeUsage(AttributeTargets.Class)]
@@ -17,7 +17,7 @@ public class ScopedAttribute() : RegisterAttribute<AsImplementedInterfaces>(Serv
 
 [AttributeUsage(AttributeTargets.Class)]
 public class ScopedAttribute<TRegistrationStrategy>() : RegisterAttribute<TRegistrationStrategy>(ServiceLifetime.Scoped)
-    where TRegistrationStrategy : IRegistrationStrategy, new();
+    where TRegistrationStrategy : IMappingStrategy, new();
 
 
 [AttributeUsage(AttributeTargets.Class)]
@@ -25,15 +25,15 @@ public class SingletonAttribute() : RegisterAttribute<AsImplementedInterfaces>(S
 
 [AttributeUsage(AttributeTargets.Class)]
 public class SingletonAttribute<TRegistrationStrategy>() : RegisterAttribute<TRegistrationStrategy>(ServiceLifetime.Singleton)
-    where TRegistrationStrategy : IRegistrationStrategy, new();
+    where TRegistrationStrategy : IMappingStrategy, new();
 
 
 [AttributeUsage(AttributeTargets.Class)]
 public class RegisterAttribute<TRegistrationStrategy>(ServiceLifetime serviceLifetime) 
     : RegisterAttribute(serviceLifetime, new TRegistrationStrategy())
-where TRegistrationStrategy : IRegistrationStrategy, new()
+where TRegistrationStrategy : IMappingStrategy, new()
 {
-    public new TRegistrationStrategy RegistrationStrategy => (TRegistrationStrategy) base.RegistrationStrategy ;
+    public TRegistrationStrategy RegistrationStrategy => (TRegistrationStrategy) base.MappingStrategy ;
 
 }
 
@@ -42,12 +42,12 @@ public class RegisterAttribute : Attribute
 {
     public ServiceLifetime ServiceLifetime { get; }
 
-    public IRegistrationStrategy RegistrationStrategy { get; }
+    public IMappingStrategy MappingStrategy { get; }
 
-    public RegisterAttribute(ServiceLifetime serviceLifetime, IRegistrationStrategy registrationStrategy)
+    public RegisterAttribute(ServiceLifetime serviceLifetime, IMappingStrategy mappingStrategy)
     {
         ServiceLifetime = serviceLifetime;
-        RegistrationStrategy = registrationStrategy;
+        MappingStrategy = mappingStrategy;
     }
 }
 

@@ -1,5 +1,7 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
-using DeviantCoding.Registerly.SelfRegistration.Scanning;
+﻿using DeviantCoding.Registerly;
+using DeviantCoding.Registerly.Scanning;
+using DeviantCoding.Registerly.SelfRegistration;
+using DeviantCoding.Registerly.Strategies;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
@@ -9,13 +11,13 @@ public static class SelfRegistrationExtensions
 {
     public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app)
     {
-        _ = app.Services.AutoRegisterServices(TypeSelector.FromDependencyContext());
+        _ = app.Services.AutoRegisterServices(TypeSelector.FromDependencyContext(t => t.IsMarkedForAutoRegistration()));
         return app;
     }
 
     public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
-        _ = app.Services.AutoRegisterServices(TypeSelector.FromAssemblies(assemblies));
+        _ = app.Services.AutoRegisterServices(TypeSelector.FromAssemblies(assemblies, t => t.IsMarkedForAutoRegistration()));
         return app;
     }
 
@@ -25,8 +27,13 @@ public static class SelfRegistrationExtensions
         foreach (var implementation in implementationsToRegister)
         {
             var attribute = implementation.GetCustomAttribute<RegisterAttribute>()!;
-            var (strategy, lifetime) = (attribute.RegistrationStrategy, attribute.ServiceLifetime);
-            strategy.RegisterServices(serviceCollection, implementation, lifetime);
+            var (mappingStrategy, lifetime) = (attribute.MappingStrategy, attribute.ServiceLifetime);
+
+            new RegistrationBuilder(serviceCollection, () => [implementation])
+                .AddClasses()
+                .WithLifetime(lifetime)
+                .WithMappingStrategy(mappingStrategy)
+                .Register();
         }
 
         return serviceCollection;

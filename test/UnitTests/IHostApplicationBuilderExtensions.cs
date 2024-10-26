@@ -16,7 +16,13 @@ namespace Microsoft.Extensions.Hosting;
 
 internal static class IHostApplicationBuilderExtensions
 {
-    public static ServiceDescriptorAssertionResult HaveService<TService>(this ServiceCollectionDescriptorAssertion target)
+    public static ServiceCollectionDescriptorAssertion HaveSomeServiceImplementing<TService>(this ServiceCollectionDescriptorAssertion target)
+    {
+        var implementations = target.Subject.Where(target => target.ServiceType == typeof(TService));
+        return implementations.Should().NotBeEmpty().And;
+    }
+
+    public static ServiceDescriptorAssertionResult HaveSingleService<TService>(this ServiceCollectionDescriptorAssertion target)
     {
         return target.Contain(s => s.ServiceType == typeof(TService));
     }
@@ -29,7 +35,23 @@ internal static class IHostApplicationBuilderExtensions
 
     public static ServiceDescriptorAssertionResult WithImplementation<TImplementation>(this ServiceDescriptorAssertionResult result)
     {
-        result.Which.ImplementationType .Should().BeAssignableTo<TImplementation>();
+        result.Which.ImplementationType.Should().BeAssignableTo<TImplementation>();
         return result;
     }
+
+    public static ServiceDescriptorAssertionResult HaveService<TService, TImplementation>(this ServiceCollectionDescriptorAssertion target)
+    {
+        return target
+            .HaveSingleService<TService>()
+            .WithImplementation<TImplementation>();
+    }
+
+    public static ServiceDescriptorAssertionResult HaveSingleRegistrationFor<TService, TImplementation>(this ServiceCollectionDescriptorAssertion target, ServiceLifetime lifetime)
+    {
+        return target
+            .HaveSingleService<TService>()
+            .WithImplementation<TImplementation>()
+            .WithLifetime(lifetime);
+    }
+
 }

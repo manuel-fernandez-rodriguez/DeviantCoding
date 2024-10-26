@@ -1,8 +1,8 @@
-﻿using DeviantCoding.Registerly.SelfRegistration.Strategies;
+﻿using DeviantCoding.Registerly.SelfRegistration;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace DeviantCoding.Registerly.SelfRegistration.Scanning
+namespace DeviantCoding.Registerly.Scanning
 {
     internal static class ReflectionExtensions
     {
@@ -62,7 +62,9 @@ namespace DeviantCoding.Registerly.SelfRegistration.Scanning
             return type.GetCustomAttributes<T>(inherit: true).Any(predicate);
         }
 
-        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsNonAbstractClass(publicOnly: false) && type.IsDefined(typeof(RegisterAttribute), true);
+        internal static bool IsRegistrable(this Type type) => type.IsNonAbstractClass(publicOnly: false);
+
+        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterAttribute), true);
 
         internal static RegisterAttribute? GetAutoRegistrationAttribute(this Type type)
         {
@@ -82,7 +84,7 @@ namespace DeviantCoding.Registerly.SelfRegistration.Scanning
                 {
                     if (t == typeof(RegisterAttribute))
                     {
-                        return (RegisterAttribute) attribute;
+                        return (RegisterAttribute)attribute;
                     }
                     t = t.BaseType;
                 }

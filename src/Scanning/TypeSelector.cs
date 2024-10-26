@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyModel;
 using System.Reflection;
 
-namespace DeviantCoding.Registerly.SelfRegistration.Scanning;
+namespace DeviantCoding.Registerly.Scanning;
 
 
 internal static class TypeSelector
@@ -9,6 +9,11 @@ internal static class TypeSelector
     public static IEnumerable<Type> FromDependencyContext()
     {
         return FromDependencyContext(DependencyContext.Default, _ => true, _ => true);
+    }
+
+    public static IEnumerable<Type> FromDependencyContext(Func<Type, bool> typeFilter)
+    {
+        return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter);
     }
 
     public static IEnumerable<Type> FromDependencyContext(DependencyContext context, Func<Assembly, bool> assemblyFilter, Func<Type, bool> typeFilter)
