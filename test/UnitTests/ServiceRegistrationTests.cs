@@ -29,9 +29,9 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_aggregate_classes_lifetimes_and_scopes()
     {
-        _services.FromAssemblies(
-            [Assembly.GetExecutingAssembly()], 
-            t=> t.Name == nameof(Implementation1) || t == typeof(Implementation2) || t == typeof(Implementation3))
+        _services
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .Where(t=> t.Name == nameof(Implementation1) || t == typeof(Implementation2) || t == typeof(Implementation3))
                 .WithLifetime(ServiceLifetime.Scoped)
                 .WithMappingStrategy<AsSelf>()
             .AndAlso( t => t == typeof(Implementation4))
@@ -49,39 +49,39 @@ public class ServiceRegistrationTest
     public void Verbose_and_compact_styles_should_be_equivalent()
     {
         TestRegistration(services => services
-            .FromAssemblies([Assembly.GetExecutingAssembly()], 
-                t => t.Name == nameof(Implementation1)|| t == typeof(Implementation2) || t == typeof(Implementation3))
-                    .WithLifetime(ServiceLifetime.Scoped)
-                    .WithMappingStrategy<AsSelf>()
-                .AndAlso(t => t == typeof(Implementation4))
-                    .WithLifetime(ServiceLifetime.Singleton)
-                    .WithMappingStrategy<AsImplementedInterfaces>()
-                .AndAlso(t => t == typeof(Implementation5))
-                    .WithLifetime(ServiceLifetime.Transient)
-                    .WithMappingStrategy<AsSelf>()
-                .RegisterServices()
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .Where(t => t.Name == nameof(Implementation1)|| t == typeof(Implementation2) || t == typeof(Implementation3))
+                .WithLifetime(ServiceLifetime.Scoped)
+                .WithMappingStrategy<AsSelf>()
+            .AndAlso(t => t == typeof(Implementation4))
+                .WithLifetime(ServiceLifetime.Singleton)
+                .WithMappingStrategy<AsImplementedInterfaces>()
+            .AndAlso(t => t == typeof(Implementation5))
+                .WithLifetime(ServiceLifetime.Transient)
+                .WithMappingStrategy<AsSelf>()
+            .RegisterServices()
         );
 
         TestRegistration(services => services
-            .FromAssemblies([Assembly.GetExecutingAssembly()],
-                    t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
-                    .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
-                .AndAlso(t => t == typeof(Implementation4))
-                    .Using(ServiceLifetime.Singleton, MappingStrategyEnum.AsImplementedInterfaces)
-                .AndAlso(t => t == typeof(Implementation5))
-                    .Using(ServiceLifetime.Transient, MappingStrategyEnum.AsSelf)
-                .RegisterServices()
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+                .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
+            .AndAlso(t => t == typeof(Implementation4))
+                .Using(ServiceLifetime.Singleton, MappingStrategyEnum.AsImplementedInterfaces)
+            .AndAlso(t => t == typeof(Implementation5))
+                .Using(ServiceLifetime.Transient, MappingStrategyEnum.AsSelf)
+            .RegisterServices()
         );
 
         TestRegistration(services => services
-            .FromAssemblies([Assembly.GetExecutingAssembly()],
-                    t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
-                    .Using<Scoped, AsSelf>()
-                .AndAlso(t => t == typeof(Implementation4))
-                    .Using<Singleton>()
-                .AndAlso(t => t == typeof(Implementation5))
-                    .Using<Transient, AsSelf>()
-                .RegisterServices()
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+                .Using<Scoped, AsSelf>()
+            .AndAlso(t => t == typeof(Implementation4))
+                .Using<Singleton>()
+            .AndAlso(t => t == typeof(Implementation5))
+                .Using<Transient, AsSelf>()
+            .RegisterServices()
         );
     }
 
@@ -121,7 +121,8 @@ public class ServiceRegistrationTest
     {
         TestRegistration(services => services
             .FromClasses(Classes)
-            .FromAssemblyOf<Exception>(t => t == typeof(Exception))
+            .FromAssemblyOf<Exception>()
+            .Where(t => t == typeof(Exception))
             .RegisterServices(),
             services => 
             {
@@ -129,6 +130,21 @@ public class ServiceRegistrationTest
                 services.Should().HaveSingleRegistrationFor<ISerializable, Exception>(ServiceLifetime.Scoped);
             }
        );
+    }
+    [Fact]
+    public void Meh()
+    {
+        var services = _services
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t)) 
+            .Using<Scoped, AsSelf>()
+            .RegisterServices()
+            ;
+
+        services.Should().HaveCount(3);
+        services.Should().HaveSingleRegistrationFor<Implementation1, Implementation1>(ServiceLifetime.Scoped);
+        services.Should().HaveSingleRegistrationFor<Implementation2, Implementation2>(ServiceLifetime.Scoped);
+        services.Should().HaveSingleRegistrationFor<Implementation3, Implementation3>(ServiceLifetime.Scoped);
     }
 
     private static void TestRegistration(Action<IServiceCollection> action, Action<IServiceCollection>? verify = null)

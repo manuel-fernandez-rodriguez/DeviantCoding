@@ -9,24 +9,24 @@ namespace DeviantCoding.Registerly;
 
 public static class RegistrationExtensions
 {
-    public static IClassSourceResult FromAssemblies(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromAssemblies(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
-        return app.Services.FromAssemblies(assemblies, predicate);
+        return app.Services.FromAssemblies(assemblies);
     }
 
-    public static IClassSourceResult FromAssemblies(this IServiceCollection services, IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromAssemblies(this IServiceCollection services, IEnumerable<Assembly> assemblies)
     {
-        return new RegistrationBuilder(services).FromAssemblies(assemblies, predicate);
+        return new RegistrationBuilder(services).FromAssemblies(assemblies);
     }
 
-    public static IClassSourceResult FromAssemblyOf<T>(this IHostApplicationBuilder app, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromAssemblyOf<T>(this IHostApplicationBuilder app)
     {
-        return app.Services.FromAssemblyOf<T>(predicate);
+        return app.Services.FromAssemblyOf<T>();
     }
 
-    public static IClassSourceResult FromAssemblyOf<T>(this IServiceCollection services, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromAssemblyOf<T>(this IServiceCollection services)
     {
-        return new RegistrationBuilder(services).FromAssemblies([typeof(T).Assembly], predicate);
+        return new RegistrationBuilder(services).FromAssemblies([typeof(T).Assembly]);
     }
 
     public static IClassSourceResult FromClasses(this IHostApplicationBuilder app, IEnumerable<Type> candidates)
@@ -39,13 +39,13 @@ public static class RegistrationExtensions
         return new RegistrationBuilder(services).FromClasses(candidates);
     }
 
-    public static IClassSourceResult FromDependencyContext(this IHostApplicationBuilder app, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromDependencyContext(this IHostApplicationBuilder app)
     {
-        return app.Services.FromDependencyContext(predicate);
+        return app.Services.FromDependencyContext();
     }
 
-    public static IClassSourceResult FromDependencyContext(this IServiceCollection services, ClassFilterDelegate? predicate = null)
+    public static IClassSourceResult FromDependencyContext(this IServiceCollection services)
     {
-        return new RegistrationBuilder(services).FromDependencyContext(predicate);
+        return new RegistrationBuilder(services).FromDependencyContext();
     }
 }

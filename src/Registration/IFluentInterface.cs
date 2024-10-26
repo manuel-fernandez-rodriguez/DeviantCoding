@@ -9,17 +9,23 @@ namespace DeviantCoding.Registerly.Registration;
 
 public interface IClassSelector : IFluentInterface
 {
-    IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null);
-    IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null);
+    IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies);
+    IClassSourceResult FromAssemblyOf<T>();
     IClassSourceResult FromClasses(IEnumerable<Type> candidates);
-    IClassSourceResult FromDependencyContext(ClassFilterDelegate? predicate = null);
+    IClassSourceResult FromDependencyContext();
     IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
 
-public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector, IQueryable<Type>
+public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector
 {
+    IClassSourceQueryable Where(Func<Type, bool> predicate);
     UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
+}
+
+public interface IClassSourceQueryable : IClassSourceResult
+{
+    IQueryable<Type> Types { get; }
 }
 
 public interface  UsingResult : IClassSourceResult, IRegisterServices, IClassSelector

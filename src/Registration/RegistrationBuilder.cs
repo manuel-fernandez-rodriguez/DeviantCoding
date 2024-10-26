@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace DeviantCoding.Registerly.Registration;
 
 internal class RegistrationBuilder(IServiceCollection serviceCollection)
-    : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult
+    : IClassSelector, IClassSourceResult, IClassSourceQueryable, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
 {
     private class RegistrationTask
     {
@@ -26,14 +26,14 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
 
     private List<RegistrationTask> Tasks { get; } = [];
     
-    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
+    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies)
     {
-        return InitRegistrationTasks(() => TypeScanner.FromAssemblies(assemblies), predicate);
+        return InitRegistrationTasks(() => TypeScanner.FromAssemblies(assemblies));
     }
 
-    public IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null)
+    public IClassSourceResult FromAssemblyOf<T>()
     {
-        return InitRegistrationTasks(() => TypeScanner.FromAssemblies([typeof(T).Assembly]), predicate);
+        return InitRegistrationTasks(() => TypeScanner.FromAssemblies([typeof(T).Assembly]));
     }
 
     public IClassSourceResult FromClasses(IEnumerable<Type> candidates)
@@ -41,9 +41,9 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
         return InitRegistrationTasks(() => TypeScanner.FromClasses(candidates));
     }
 
-    public IClassSourceResult FromDependencyContext(ClassFilterDelegate? predicate = null)
+    public IClassSourceResult FromDependencyContext()
     {
-        return InitRegistrationTasks(() => TypeScanner.FromDependencyContext(predicate));
+        return InitRegistrationTasks(() => TypeScanner.FromDependencyContext());
     }
 
     public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
@@ -106,11 +106,11 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
     {
         serviceSelector ??= _ => true;
 
-        RegistrationTask task = new() { SourceSelector = sourceSelector };
-
-        task.Classes = task.Classes.Concat(sourceSelector().Where(t => serviceSelector(t)));
-
-        Tasks.Add(task);
+        Tasks.Add(new()
+        {
+            SourceSelector = sourceSelector,
+            Classes = sourceSelector().Where(t => serviceSelector(t))
+        });
 
         return this;
     }
@@ -118,6 +118,8 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
     Type IQueryable.ElementType { get; } = typeof(Type);
     Expression IQueryable.Expression => GetClasses().Expression ?? throw new InvalidOperationException("No classes have been selected yet.");
     IQueryProvider IQueryable.Provider => GetClasses().Provider ?? throw new InvalidOperationException("No classes have been selected yet.");
+
+    IQueryable<Type> IClassSourceQueryable.Types => this;
 
     IEnumerator<Type> IEnumerable<Type>.GetEnumerator()
     {
@@ -132,5 +134,12 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
     private IQueryable<Type> GetClasses()
     {
         return Tasks.LastOrDefault()?.Classes ?? throw new InvalidOperationException("No classes have been selected yet.");
+    }
+
+    public IClassSourceQueryable Where(Func<Type, bool> predicate)
+    {
+        var task = Tasks.LastOrDefault() ?? throw new InvalidOperationException("No classes have been selected yet.");
+        task.Classes = task.Classes.Where(predicate).AsQueryable();
+        return this;
     }
 }
