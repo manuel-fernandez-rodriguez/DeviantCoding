@@ -4,46 +4,40 @@ using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationBuilder(IServiceCollection serviceCollection)
-    : IClassSelector, IClassSourceResult, IClassSourceQueryable, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
+internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassSourceQueryable, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
 {
-    private class RegistrationTask
+    private readonly IServiceCollection _serviceCollection;
+
+    public RegistrationBuilder(IServiceCollection serviceCollection)
     {
-        public required SourceSelectorDelegate SourceSelector { get; init; }
-        public IMappingStrategy? MappingStrategy { get; set; }
-        public IRegistrationStrategy? RegistrationStrategy { get; set; }
-        public ILifetimeStrategy? LifetimeStrategy { get; set; }
-        public IQueryable<Type> Classes { get; set; } = Enumerable.Empty<Type>().AsQueryable();
+        _serviceCollection = serviceCollection;
+        Tasks = new(this);
     }
 
-    private List<RegistrationTask> Tasks { get; } = [];
+    private RegistrationTasks Tasks { get; }
     
-    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies)
-    {
-        return InitRegistrationTasks(() => TypeScanner.FromAssemblies(assemblies));
-    }
+    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) => Tasks.AddNew(() => TypeScanner.FromAssemblies(assemblies));
 
-    public IClassSourceResult FromAssemblyOf<T>()
-    {
-        return InitRegistrationTasks(() => TypeScanner.FromAssemblies([typeof(T).Assembly]));
-    }
+    public IClassSourceResult FromAssemblyOf<T>() => Tasks.AddNew(() => TypeScanner.FromAssemblies([typeof(T).Assembly]));
 
-    public IClassSourceResult FromClasses(IEnumerable<Type> candidates)
-    {
-        return InitRegistrationTasks(() => TypeScanner.FromClasses(candidates));
-    }
+    public IClassSourceResult FromClasses(IEnumerable<Type> candidates) => Tasks.AddNew(() => TypeScanner.FromClasses(candidates));
 
-    public IClassSourceResult FromDependencyContext()
+    public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
+
+    public IClassSourceQueryable Where(Func<Type, bool> predicate)
     {
-        return InitRegistrationTasks(() => TypeScanner.FromDependencyContext());
+        var task = Tasks.LastOrDefault();
+        if (task != null)
+        {
+            task.Classes = task.Classes.Where(predicate).AsQueryable();
+        }
+        return this;
     }
 
     public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
@@ -52,7 +46,8 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
         {
             throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
         }
-        return InitRegistrationTasks(Tasks.Last().SourceSelector, predicate);
+        
+        return Tasks.AddNew(Tasks.Last().SourceSelector, predicate); ;
     }
 
     public UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
@@ -95,51 +90,22 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
                 var registrationStrategy = task.RegistrationStrategy ?? new AddRegistrationStrategy();
 
                 var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
-                registrationStrategy!.RegisterServices(serviceCollection, descriptors);
+                registrationStrategy!.RegisterServices(_serviceCollection, descriptors);
             }
         }
 
-        return serviceCollection;
-    }
-
-    private IClassSourceResult InitRegistrationTasks(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
-    {
-        serviceSelector ??= _ => true;
-
-        Tasks.Add(new()
-        {
-            SourceSelector = sourceSelector,
-            Classes = sourceSelector().Where(t => serviceSelector(t))
-        });
-
-        return this;
+        return _serviceCollection;
     }
 
     Type IQueryable.ElementType { get; } = typeof(Type);
-    Expression IQueryable.Expression => GetClasses().Expression ?? throw new InvalidOperationException("No classes have been selected yet.");
-    IQueryProvider IQueryable.Provider => GetClasses().Provider ?? throw new InvalidOperationException("No classes have been selected yet.");
+
+    Expression IQueryable.Expression => Tasks.GetClasses().Expression;
+
+    IQueryProvider IQueryable.Provider => Tasks.GetClasses().Provider;
 
     IQueryable<Type> IClassSourceQueryable.Types => this;
 
-    IEnumerator<Type> IEnumerable<Type>.GetEnumerator()
-    {
-        return GetClasses().GetEnumerator() ?? throw new InvalidOperationException("No classes have been selected yet.");
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetClasses().GetEnumerator() ?? throw new InvalidOperationException("No classes have been selected yet.");
-    }
-
-    private IQueryable<Type> GetClasses()
-    {
-        return Tasks.LastOrDefault()?.Classes ?? throw new InvalidOperationException("No classes have been selected yet.");
-    }
-
-    public IClassSourceQueryable Where(Func<Type, bool> predicate)
-    {
-        var task = Tasks.LastOrDefault() ?? throw new InvalidOperationException("No classes have been selected yet.");
-        task.Classes = task.Classes.Where(predicate).AsQueryable();
-        return this;
-    }
+    IEnumerator<Type> IEnumerable<Type>.GetEnumerator() => Tasks.GetClasses().GetEnumerator();
+    
+    IEnumerator IEnumerable.GetEnumerator() => Tasks.GetClasses().GetEnumerator();
 }
