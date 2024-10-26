@@ -6,7 +6,7 @@ namespace DeviantCoding.Registerly.Scanning;
 public delegate IEnumerable<Type> SourceSelectorDelegate();
 public delegate bool ClassFilterDelegate(Type type);
 
-internal static class TypeSelector
+internal static class TypeScanner
 {
     public static IEnumerable<Type> FromDependencyContext(ClassFilterDelegate? typeFilter = null)
     {

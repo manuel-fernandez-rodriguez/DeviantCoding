@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using static DeviantCoding.Registerly.Scanning.TypeSelector;
+using static DeviantCoding.Registerly.Scanning.TypeScanner;
 
 namespace DeviantCoding.Registerly.Scanning;
 

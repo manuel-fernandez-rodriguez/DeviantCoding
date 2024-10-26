@@ -12,13 +12,13 @@ public static class SelfRegistrationExtensions
 {
     public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app)
     {
-        _ = app.Services.AutoRegisterServices(TypeSelector.FromDependencyContext(t => t.IsMarkedForAutoRegistration()));
+        _ = app.Services.AutoRegisterServices(TypeScanner.FromDependencyContext(t => t.IsMarkedForAutoRegistration()));
         return app;
     }
 
     public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
-        _ = app.Services.AutoRegisterServices(TypeSelector.FromAssemblies(assemblies, t => t.IsMarkedForAutoRegistration()));
+        _ = app.Services.AutoRegisterServices(TypeScanner.FromAssemblies(assemblies, t => t.IsMarkedForAutoRegistration()));
         return app;
     }
 

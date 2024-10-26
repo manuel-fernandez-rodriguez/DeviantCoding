@@ -23,7 +23,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void FromDependencyContext()
         {
-            var types = TypeSelector
+            var types = TypeScanner
                 .FromDependencyContext()
                 .Where( t => t.Name.StartsWith("TypeScannerClass"));
 
@@ -33,7 +33,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void FromAssemblyNames()
         {
-            var types = TypeSelector
+            var types = TypeScanner
                 .FromAssemblyNames([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
                 .Where(t => t.Name.StartsWith("TypeScannerClass"));
 

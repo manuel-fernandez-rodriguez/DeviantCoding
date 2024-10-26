@@ -26,22 +26,22 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
 
     public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
     {
-        return InitRegistrationTasks(() => TypeSelector.FromAssemblies(assemblies), predicate);
+        return InitRegistrationTasks(() => TypeScanner.FromAssemblies(assemblies), predicate);
     }
 
     public IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null)
     {
-        return InitRegistrationTasks(() => TypeSelector.FromAssemblies([typeof(T).Assembly]), predicate);
+        return InitRegistrationTasks(() => TypeScanner.FromAssemblies([typeof(T).Assembly]), predicate);
     }
 
     public IClassSourceResult FromClasses(IEnumerable<Type> candidates)
     {
-        return InitRegistrationTasks(() => TypeSelector.FromClasses(candidates));
+        return InitRegistrationTasks(() => TypeScanner.FromClasses(candidates));
     }
 
     public IClassSourceResult FromDependencyContext(ClassFilterDelegate? predicate = null)
     {
-        return InitRegistrationTasks(() => TypeSelector.FromDependencyContext(predicate));
+        return InitRegistrationTasks(() => TypeScanner.FromDependencyContext(predicate));
     }
 
     public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
