@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassSourceQueryable, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
+internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
 {
     private readonly IServiceCollection _serviceCollection;
 
@@ -30,7 +30,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
 
     public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
 
-    IClassSourceQueryable IClassSourceResult.Where(ClassFilterDelegate predicate)
+    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
     {
         var task = Tasks.LastOrDefault();
         if (task != null)
@@ -39,6 +39,8 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
         }
         return this;
     }
+
+    IQueryable<Type> IClassSourceResult.Types => this;
 
     IClassSourceResult IClassSelector.AndAlso(ClassFilterDelegate predicate)
     {
@@ -104,8 +106,6 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
     Expression IQueryable.Expression => Tasks.GetClasses().Expression;
 
     IQueryProvider IQueryable.Provider => Tasks.GetClasses().Provider;
-
-    IQueryable<Type> IClassSourceQueryable.Types => this;
 
     IEnumerator<Type> IEnumerable<Type>.GetEnumerator() => Tasks.GetClasses().GetEnumerator();
     

@@ -16,11 +16,12 @@ public class ServiceRegistrationTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();
 
-    public interface IService1 { }
+    public interface IService1 { string Value { get; set; } }
     public interface IService2 { }
-    public class Implementation1 : IService1 { }
-    public class Implementation2 : IService1 { }
-    public class Implementation3 : IService1 { }
+    public abstract class Service1Base : IService1 { public string Value { get; set; } = ""; }
+    public class Implementation1 : Service1Base {  }
+    public class Implementation2 : Service1Base { }
+    public class Implementation3 : Service1Base { }
     public class Implementation4 : IService2 { }
     public class Implementation5 : IService2 { }
 
@@ -59,17 +60,6 @@ public class ServiceRegistrationTest
             .AndAlso(t => t == typeof(Implementation5))
                 .WithLifetime(ServiceLifetime.Transient)
                 .WithMappingStrategy<AsSelf>()
-            .RegisterServices()
-        );
-
-        TestRegistration(services => services
-            .FromAssemblyOf<Implementation1>()
-            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
-                .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
-            .AndAlso(t => t == typeof(Implementation4))
-                .Using(ServiceLifetime.Singleton, MappingStrategyEnum.AsImplementedInterfaces)
-            .AndAlso(t => t == typeof(Implementation5))
-                .Using(ServiceLifetime.Transient, MappingStrategyEnum.AsSelf)
             .RegisterServices()
         );
 
@@ -131,20 +121,37 @@ public class ServiceRegistrationTest
             }
        );
     }
+
     [Fact]
-    public void Meh()
+    public void Should_register_as_designated_type()
     {
         var services = _services
             .FromAssemblies([Assembly.GetExecutingAssembly()])
-            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t)) 
-            .Using<Scoped, AsSelf>()
-            .RegisterServices()
-            ;
+            .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2) }.Contains(t)) 
+            .As<IService1>()
+            .RegisterServices();
 
-        services.Should().HaveCount(3);
-        services.Should().HaveSingleRegistrationFor<Implementation1, Implementation1>(ServiceLifetime.Scoped);
-        services.Should().HaveSingleRegistrationFor<Implementation2, Implementation2>(ServiceLifetime.Scoped);
-        services.Should().HaveSingleRegistrationFor<Implementation3, Implementation3>(ServiceLifetime.Scoped);
+        services.Should().HaveCount(2);
+        services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(2)
+            .And.Contain(s => s.ImplementationType == typeof(Implementation1))
+            .And.Contain(s => s.ImplementationType == typeof(Implementation2));
+    }
+
+    [Fact]
+    public void Should_register_as_factory()
+    {
+        var services = _services
+            .FromClasses(Classes)
+            .Where(t => t == typeof(Implementation1))
+                .WithFactory<IService1>(s => new Implementation1 { Value = "potato1" })
+            .AndAlso(t => t == typeof(Implementation1))
+                .WithFactory( s => new Implementation1 {  Value = "potato2"})
+            .RegisterServices();
+
+        var serviceProvider = services.BuildServiceProvider(); 
+        using var scope = serviceProvider.CreateScope();
+        serviceProvider.GetRequiredService<IService1>().Value.Should().Be("potato1");
+        serviceProvider.GetRequiredService<Implementation1>().Value.Should().Be("potato2");
     }
 
     private static void TestRegistration(Action<IServiceCollection> action, Action<IServiceCollection>? verify = null)

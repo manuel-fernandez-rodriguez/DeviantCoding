@@ -17,16 +17,17 @@ public interface IClassSelector : IFluentInterface
 }
 
 
-public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector
+public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector, IMappingStrategyDefinition
 {
-    IClassSourceQueryable Where(ClassFilterDelegate predicate);
+    IClassSourceResult Where(ClassFilterDelegate predicate);
     UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
-}
-
-public interface IClassSourceQueryable : IClassSourceResult
-{
     IQueryable<Type> Types { get; }
 }
+
+//public interface IClassSourceQueryable : IClassSourceResult
+//{
+    
+//}
 
 public interface  UsingResult : IClassSourceResult, IRegisterServices, IClassSelector
 {

@@ -68,7 +68,7 @@ namespace DeviantCoding.Registerly.Scanning
 
         internal static RegisterlyAttribute? GetAutoRegistrationAttribute(this Type type)
         {
-            if (!type.IsNonAbstractClass(publicOnly: false))
+            if (!type.IsRegistrable())
             {
                 return null;
             }
