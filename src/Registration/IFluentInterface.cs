@@ -1,4 +1,5 @@
 ﻿using DeviantCoding.Registerly.Strategies;
+using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Reflection;
@@ -8,14 +9,27 @@ namespace DeviantCoding.Registerly.Registration;
 public interface IClassSource : IFluentInterface
 {
     IClassSourceResult AddClasses();
-    IClassSourceResult AddClasses(Func<TypeInfo, bool> predicate);
+    IClassSourceResult AddClasses(Func<Type, bool> predicate);
 }
 
 public interface IClassSourceResult : IClassSource, ILifetimeDefinition, IRegisterServices
 {
     UsingResult Using(ServiceLifetime lifetime);
+    UsingResult Using(ServiceLifetime lifetime, MappingStrategyEnum mappingStrategy);
     UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy);
     UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
+
+    UsingResult Using<TLifetime>()
+        where TLifetime : ILifetimeStrategy, new();
+
+    UsingResult Using<TLifetime, TMappingStrategy>()
+        where TLifetime : ILifetimeStrategy, new()
+        where TMappingStrategy : IMappingStrategy, new();
+
+    UsingResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>() 
+        where TLifetime : ILifetimeStrategy, new()
+        where TMappingStrategy : IMappingStrategy, new()
+        where TRegistrationStrategy : IRegistrationStrategy, new();
 }
 
 public interface  UsingResult : IClassSource, IRegisterServices

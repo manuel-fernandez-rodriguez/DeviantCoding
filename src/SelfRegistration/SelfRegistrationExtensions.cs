@@ -30,9 +30,7 @@ public static class SelfRegistrationExtensions
             var (mappingStrategy, lifetime) = (attribute.MappingStrategy, attribute.ServiceLifetime);
 
             new RegistrationBuilder(serviceCollection, () => [implementation])
-                .AddClasses()
-                .WithLifetime(lifetime)
-                .WithMappingStrategy(mappingStrategy)
+                .Using(lifetime, mappingStrategy)
                 .Register();
         }
 

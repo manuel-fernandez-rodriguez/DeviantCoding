@@ -1,5 +1,6 @@
 ﻿using DeviantCoding.Registerly.Registration;
 using DeviantCoding.Registerly.Strategies;
+using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,29 +13,40 @@ namespace DeviantCoding.Registerly
     {
         private class RegistrationTask
         {
-            public required Func<TypeInfo, bool> ServiceSelector { get; init; }
+            public required Func<Type, bool> ServiceSelector { get; init; }
             public IMappingStrategy? MappingStrategy { get; set; }
             public IRegistrationStrategy? RegistrationStrategy { get; set; }
             public ServiceLifetime? ServiceLifetime { get; set; }
         }
 
-        private List<RegistrationTask> _tasks = [];
+        private List<RegistrationTask> Tasks { get; } = [];
 
         public IClassSourceResult AddClasses() => AddClasses(_ => true);
-        public IClassSourceResult AddClasses(Func<TypeInfo, bool> serviceSelector)
+        public IClassSourceResult AddClasses(Func<Type, bool> serviceSelector)
         {
-            _tasks.Add(new RegistrationTask { ServiceSelector = serviceSelector });
+            Tasks.Add(new RegistrationTask { ServiceSelector = serviceSelector });
             return this;
         }
 
-        public UsingResult Using(ServiceLifetime lifetime)
-        {
-            return Using(lifetime, null!, null!);
-        }
+        public UsingResult Using(ServiceLifetime lifetime) => Using(lifetime, null!, null!);
 
-        public UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
+        public UsingResult Using(ServiceLifetime lifetime, MappingStrategyEnum mappingStrategy) => Using(lifetime, MappingStrategy.From(mappingStrategy), null!);
+
+        public UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy) => Using(lifetime, mappingStrategy, null!);
+
+        public UsingResult Using<TLifetime>()
+            where TLifetime : ILifetimeStrategy, new() => Using<TLifetime, AsImplementedInterfaces>();
+
+        public UsingResult Using<TLifetime, TMappingStrategy>()
+            where TLifetime : ILifetimeStrategy, new()
+            where TMappingStrategy : IMappingStrategy, new() => Using<TLifetime, TMappingStrategy, AddRegistrationStrategy>();
+
+        public UsingResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>()
+            where TLifetime : ILifetimeStrategy, new()
+            where TMappingStrategy : IMappingStrategy, new()
+            where TRegistrationStrategy : IRegistrationStrategy, new()
         {
-            return Using(lifetime, mappingStrategy, null!);
+            return Using(LifetimeStrategy.From(new TLifetime()), new TMappingStrategy(), new TRegistrationStrategy());
         }
 
         public UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
@@ -47,7 +59,8 @@ namespace DeviantCoding.Registerly
 
         public ILifetimeDefinitionResult WithLifetime(ServiceLifetime serviceLifetime)
         {
-            foreach (var task in _tasks.Where(t => t.ServiceLifetime is null))
+            EnsureTasks();
+            foreach (var task in Tasks.Where(t => t.ServiceLifetime is null))
             {
                 task.ServiceLifetime = serviceLifetime;
             }
@@ -59,7 +72,8 @@ namespace DeviantCoding.Registerly
 
         public IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy  mappingStrategy)
         {
-            foreach (var task in _tasks.Where(t => t.MappingStrategy is null))
+            EnsureTasks();
+            foreach (var task in Tasks.Where(t => t.MappingStrategy is null))
             {
                 task.MappingStrategy = mappingStrategy;
             }
@@ -71,22 +85,22 @@ namespace DeviantCoding.Registerly
 
         public IMappingStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
         {
-            foreach (var task in _tasks.Where(t => t.RegistrationStrategy is null))
+            EnsureTasks();
+            foreach (var task in Tasks.Where(t => t.RegistrationStrategy is null))
             {
                 task.RegistrationStrategy = registrationStrategy;
             }
             return this;
         }
 
-
         public IServiceCollection Register()
         {
             var allCandidates = sourceSelector();
             foreach (var candidate in allCandidates)
             {
-                foreach (var task in _tasks)
+                foreach (var task in Tasks)
                 {
-                    if (task.ServiceSelector(candidate.GetTypeInfo()))
+                    if (task.ServiceSelector(candidate))
                     {
                         var serviceLifetime = task.ServiceLifetime ?? ServiceLifetime.Scoped;
                         var mappingStrategy = task.MappingStrategy ?? new AsImplementedInterfaces();
@@ -101,5 +115,12 @@ namespace DeviantCoding.Registerly
             return serviceCollection;
         }
 
+        private void EnsureTasks()
+        {
+            if (Tasks.Count == 0)
+            {
+                AddClasses();
+            }
+        }
     }
 }

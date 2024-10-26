@@ -18,4 +18,14 @@ public static class RegistrationExtensions
     {
         return new RegistrationBuilder(services, () => TypeSelector.FromAssemblies(assemblies));
     }
+
+    public static IClassSource FromAssemblyOf<T>(this IHostApplicationBuilder app)
+    {
+        return app.Services.FromAssemblyOf<T>();
+    }
+
+    public static IClassSource FromAssemblyOf<T>(this IServiceCollection services)
+    {
+        return new RegistrationBuilder(services, () => TypeSelector.FromAssemblies([typeof(T).Assembly]));
+    }
 }

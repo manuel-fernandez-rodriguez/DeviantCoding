@@ -1,4 +1,6 @@
-﻿using DeviantCoding.Registerly.Strategies.Mapping;
+﻿using DeviantCoding.Registerly.Strategies.Lifetime;
+using DeviantCoding.Registerly.Strategies.Mapping;
+using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
@@ -43,42 +45,52 @@ public class ServiceRegistrationTest
     [Fact]
     public void Verbose_and_compact_styles_should_be_equivalent()
     {
-        IHostApplicationBuilder host1 = Host.CreateEmptyApplicationBuilder(new());
+        Test(host => host
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+                .AddClasses(t => t.Name == nameof(Implementation1))
+                .AddClasses(t => t == typeof(Implementation2))
+                .AddClasses(t => t == typeof(Implementation3))
+                    .WithLifetime(ServiceLifetime.Scoped)
+                    .WithMappingStrategy<AsSelf>()
+                .AddClasses(t => t == typeof(Implementation4))
+                    .WithLifetime(ServiceLifetime.Singleton)
+                    .WithMappingStrategy<AsImplementedInterfaces>()
+                .AddClasses(t => t == typeof(Implementation5))
+                    .WithLifetime(ServiceLifetime.Transient)
+                    .WithMappingStrategy<AsSelf>()
+                .Register()
+        );
 
-        host1.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.Name == nameof(Implementation1))
-            .AddClasses(t => t == typeof(Implementation2))
-            .AddClasses(t => t == typeof(Implementation3))
-                .WithLifetime(ServiceLifetime.Scoped)
-                .WithMappingStrategy<AsSelf>()
-            .AddClasses(t => t == typeof(Implementation4))
-                .WithLifetime(ServiceLifetime.Singleton)
-                .WithMappingStrategy<AsImplementedInterfaces>()
-            .AddClasses(t => t == typeof(Implementation5))
-                .WithLifetime(ServiceLifetime.Transient)
-                .WithMappingStrategy<AsSelf>()
-            .Register();
+        Test(host => host
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+                .AddClasses(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+                    .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
+                .AddClasses(t => t == typeof(Implementation4))
+                    .Using(ServiceLifetime.Singleton, MappingStrategyEnum.AsImplementedInterfaces)
+                .AddClasses(t => t == typeof(Implementation5))
+                    .Using(ServiceLifetime.Transient, MappingStrategyEnum.AsSelf)
+                .Register()
+        );
 
-        IHostApplicationBuilder host2 = Host.CreateEmptyApplicationBuilder(new());
+        Test(host => host
+            .FromAssemblies([Assembly.GetExecutingAssembly()])
+                .AddClasses(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+                    .Using<Scoped, AsSelf>()
+                .AddClasses(t => t == typeof(Implementation4))
+                    .Using<Singleton>()
+                .AddClasses(t => t == typeof(Implementation5))
+                    .Using<Transient, AsSelf>()
+                .Register()
+        );
 
-        host2.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
-                .Using(ServiceLifetime.Scoped, new AsSelf())
-            .AddClasses(t => t == typeof(Implementation4))
-                .Using(ServiceLifetime.Singleton, new AsImplementedInterfaces())
-            .AddClasses(t => t == typeof(Implementation5))
-                .Using(ServiceLifetime.Transient, new AsSelf())
-            .Register();
 
-        VerifyServices(host1);
-        VerifyServices(host2);
     }
 
     [Fact]
     public void Should_apply_default_strategy()
     {
         _host.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.ImplementedInterfaces.Intersect([typeof(IService1), typeof(IService2)]).Any())
+            .AddClasses(t => t.GetInterfaces().Intersect([typeof(IService1), typeof(IService2)]).Any())
             .Register();
 
         _host.Services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
@@ -105,6 +117,15 @@ public class ServiceRegistrationTest
         _host.Services
             .Where(s => s.ServiceType == typeof(IService1) || s.ServiceType == typeof(IService2))
             .Should().OnlyContain(o => o.Lifetime == ServiceLifetime.Scoped);
+    }
+
+    private static void Test(Action<IHostApplicationBuilder> action, Action<IHostApplicationBuilder>? verify = null)
+    {
+        verify = verify ?? VerifyServices;
+
+        IHostApplicationBuilder host = Host.CreateEmptyApplicationBuilder(new());
+        action(host);
+        verify(host);
     }
 
     private static void VerifyServices(IHostApplicationBuilder host)
