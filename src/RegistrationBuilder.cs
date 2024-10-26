@@ -1,4 +1,5 @@
 ﻿using DeviantCoding.Registerly.Registration;
+using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
@@ -13,7 +14,7 @@ namespace DeviantCoding.Registerly
     {
         private class RegistrationTask
         {
-            public required Func<Type, bool> ServiceSelector { get; init; }
+            public required ClassFilterDelegate ServiceSelector { get; init; }
             public IMappingStrategy? MappingStrategy { get; set; }
             public IRegistrationStrategy? RegistrationStrategy { get; set; }
             public ServiceLifetime? ServiceLifetime { get; set; }
@@ -24,7 +25,7 @@ namespace DeviantCoding.Registerly
         public IClassSourceResult AddClasses() => AddClasses(_ => true);
         public IClassSourceResult AddClasses(Func<Type, bool> serviceSelector)
         {
-            Tasks.Add(new RegistrationTask { ServiceSelector = serviceSelector });
+            Tasks.Add(new RegistrationTask { ServiceSelector = new ClassFilterDelegate(serviceSelector) });
             return this;
         }
 
@@ -95,6 +96,7 @@ namespace DeviantCoding.Registerly
 
         public IServiceCollection Register()
         {
+            EnsureTasks();
             var allCandidates = sourceSelector();
             foreach (var candidate in allCandidates)
             {

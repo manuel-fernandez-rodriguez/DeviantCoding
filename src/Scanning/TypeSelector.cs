@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Scanning;
 
+internal delegate bool ClassFilterDelegate(Type type);
 
 internal static class TypeSelector
 {
@@ -11,12 +12,12 @@ internal static class TypeSelector
         return FromDependencyContext(DependencyContext.Default, _ => true, _ => true);
     }
 
-    public static IEnumerable<Type> FromDependencyContext(Func<Type, bool> typeFilter)
+    public static IEnumerable<Type> FromDependencyContext(ClassFilterDelegate typeFilter)
     {
         return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter);
     }
 
-    public static IEnumerable<Type> FromDependencyContext(DependencyContext context, Func<Assembly, bool> assemblyFilter, Func<Type, bool> typeFilter)
+    public static IEnumerable<Type> FromDependencyContext(DependencyContext context, Func<Assembly, bool> assemblyFilter, ClassFilterDelegate typeFilter)
     {
         var assemblyNames = context.RuntimeLibraries
             .SelectMany(library => library.GetDefaultAssemblyNames(context))
@@ -26,15 +27,20 @@ internal static class TypeSelector
             .FromAssemblyNames(assemblyNames, typeFilter);
     }
 
-    public static IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, Func<Type, bool> typeFilter)
+    public static IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
     {
         return new AssemblyLoader()
             .FromAssemblyNames(assemblyNames, typeFilter);
     }
 
-    public static IEnumerable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, Func<Type, bool>? typeFilter = null)
+    public static IEnumerable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
         return new AssemblyLoader()
             .FromAssemblies(assemblies, typeFilter);
+    }
+
+    public static IEnumerable<Type> FromClasses(IEnumerable<Type> classes)
+    {
+        return classes.Where(t => t.IsRegistrable());
     }
 }

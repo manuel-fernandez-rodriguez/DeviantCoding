@@ -21,6 +21,7 @@ public class ServiceRegistrationTest
     public class Implementation4 : IService2 { }
     public class Implementation5 : IService2 { }
 
+    public List<Type> Classes = [ typeof(Implementation1), typeof(Implementation2), typeof(Implementation3), typeof(Implementation4), typeof(Implementation5) ];
 
     [Fact]
     public void Should_aggregate_classes_lifetimes_and_scopes()
@@ -89,18 +90,22 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_apply_default_strategy()
     {
-        _host.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.GetInterfaces().Intersect([typeof(IService1), typeof(IService2)]).Any())
-            .Register();
+        Test(host => host
+           .FromClasses(Classes)
+           .Register(),
+           VerifyServices2
+       );
+    }
 
-        _host.Services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
-            .And.Contain(s => s.ImplementationType == typeof(Implementation1))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation2))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation3));
-
-        _host.Services.Where(s => s.ServiceType == typeof(IService2)).Should().HaveCount(2)
-            .And.Contain(s => s.ImplementationType == typeof(Implementation4))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation5));
+    [Fact]
+    public void Should_apply_default_strategy2()
+    {
+        Test(host => host
+            .FromAssemblyOf<IService1>()
+                .AddClasses()
+                .Register(),
+            VerifyServices2
+        );
     }
 
     [Fact]
@@ -135,6 +140,18 @@ public class ServiceRegistrationTest
         host.Services.Should().HaveSingleRegistrationFor<Implementation3, Implementation3>(ServiceLifetime.Scoped);
         host.Services.Should().HaveSingleRegistrationFor<IService2, Implementation4>(ServiceLifetime.Singleton);
         host.Services.Should().HaveSingleRegistrationFor<Implementation5, Implementation5>(ServiceLifetime.Transient);
+    }
+
+    private static void VerifyServices2(IHostApplicationBuilder host)
+    {
+        host.Services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
+            .And.Contain(s => s.ImplementationType == typeof(Implementation1))
+            .And.Contain(s => s.ImplementationType == typeof(Implementation2))
+            .And.Contain(s => s.ImplementationType == typeof(Implementation3));
+
+        host.Services.Where(s => s.ServiceType == typeof(IService2)).Should().HaveCount(2)
+            .And.Contain(s => s.ImplementationType == typeof(Implementation4))
+            .And.Contain(s => s.ImplementationType == typeof(Implementation5));
     }
 
 }

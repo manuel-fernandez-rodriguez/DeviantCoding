@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using static DeviantCoding.Registerly.Scanning.TypeSelector;
 
 namespace DeviantCoding.Registerly.Scanning;
 
 internal class AssemblyLoader
 {
-    private static readonly Func<Type, bool> DefaultFilter = t => t.IsRegistrable();
+    private static readonly ClassFilterDelegate DefaultFilter = t => t.IsRegistrable();
 
-    private readonly Func<Type, bool> _defaultFilter = DefaultFilter;
+    private readonly ClassFilterDelegate _defaultFilter = DefaultFilter;
 
-    public AssemblyLoader(Func<Type, bool> defaultFilter)
+    public AssemblyLoader(ClassFilterDelegate defaultFilter)
     {
         _defaultFilter = defaultFilter;
     }
@@ -18,14 +19,14 @@ internal class AssemblyLoader
 
     }
 
-    public IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, Func<Type, bool> typeFilter)
+    public IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
     {
         var assemblies = LoadAssemblies(assemblyNames);
         return FromAssemblies(assemblies, typeFilter);
     }
 
 
-    public IEnumerable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, Func<Type, bool>? typeFilter = null)
+    public IEnumerable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
         typeFilter ??= _defaultFilter;
         return assemblies
