@@ -5,6 +5,8 @@ using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -16,14 +18,14 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
     private class RegistrationTask
     {
         public required SourceSelectorDelegate SourceSelector { get; init; }
-        public required ClassFilterDelegate ServiceSelector { get; init; }
         public IMappingStrategy? MappingStrategy { get; set; }
         public IRegistrationStrategy? RegistrationStrategy { get; set; }
         public ILifetimeStrategy? LifetimeStrategy { get; set; }
+        public IQueryable<Type> Classes { get; set; } = Enumerable.Empty<Type>().AsQueryable();
     }
 
     private List<RegistrationTask> Tasks { get; } = [];
-
+    
     public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
     {
         return InitRegistrationTasks(() => TypeScanner.FromAssemblies(assemblies), predicate);
@@ -86,17 +88,14 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
     {
         foreach (var task in Tasks)
         {
-            foreach (var candidate in task.SourceSelector())
+            foreach (var candidate in task.Classes)
             {
-                if (task.ServiceSelector(candidate))
-                {
-                    var serviceLifetime = task.LifetimeStrategy ?? new Scoped();
-                    var mappingStrategy = task.MappingStrategy ?? new AsImplementedInterfaces();
-                    var registrationStrategy = task.RegistrationStrategy ?? new AddRegistrationStrategy();
+                var serviceLifetime = task.LifetimeStrategy ?? new Scoped();
+                var mappingStrategy = task.MappingStrategy ?? new AsImplementedInterfaces();
+                var registrationStrategy = task.RegistrationStrategy ?? new AddRegistrationStrategy();
 
-                    var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
-                    registrationStrategy!.RegisterServices(serviceCollection, descriptors);
-                }
+                var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
+                registrationStrategy!.RegisterServices(serviceCollection, descriptors);
             }
         }
 
@@ -105,11 +104,33 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
 
     private IClassSourceResult InitRegistrationTasks(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
     {
-        Tasks.Add(new RegistrationTask
-        {
-            SourceSelector = sourceSelector,
-            ServiceSelector = new ClassFilterDelegate(serviceSelector ?? (_ => true))
-        });
+        serviceSelector ??= _ => true;
+
+        RegistrationTask task = new() { SourceSelector = sourceSelector };
+
+        task.Classes = task.Classes.Concat(sourceSelector().Where(t => serviceSelector(t)));
+
+        Tasks.Add(task);
+
         return this;
+    }
+
+    Type IQueryable.ElementType { get; } = typeof(Type);
+    Expression IQueryable.Expression => GetClasses().Expression ?? throw new InvalidOperationException("No classes have been selected yet.");
+    IQueryProvider IQueryable.Provider => GetClasses().Provider ?? throw new InvalidOperationException("No classes have been selected yet.");
+
+    IEnumerator<Type> IEnumerable<Type>.GetEnumerator()
+    {
+        return GetClasses().GetEnumerator() ?? throw new InvalidOperationException("No classes have been selected yet.");
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetClasses().GetEnumerator() ?? throw new InvalidOperationException("No classes have been selected yet.");
+    }
+
+    private IQueryable<Type> GetClasses()
+    {
+        return Tasks.LastOrDefault()?.Classes ?? throw new InvalidOperationException("No classes have been selected yet.");
     }
 }

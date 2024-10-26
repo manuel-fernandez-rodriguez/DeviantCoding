@@ -26,10 +26,11 @@ internal class AssemblyLoader
     }
 
 
-    public IEnumerable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
+    public IQueryable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
         typeFilter ??= _defaultFilter;
         return assemblies
+            .AsQueryable()
             .SelectMany(asm => asm.GetLoadableTypes())
             .Where(t => _defaultFilter(t) && typeFilter(t));
     }
