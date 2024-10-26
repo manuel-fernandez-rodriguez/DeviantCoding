@@ -39,6 +39,11 @@ internal class RegistrationBuilder(IServiceCollection serviceCollection)
         return InitRegistrationTasks(() => TypeSelector.FromClasses(candidates));
     }
 
+    public IClassSourceResult FromDependencyContext(ClassFilterDelegate? predicate = null)
+    {
+        return InitRegistrationTasks(() => TypeSelector.FromDependencyContext(predicate));
+    }
+
     public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
     {
         if (Tasks.Count == 0)

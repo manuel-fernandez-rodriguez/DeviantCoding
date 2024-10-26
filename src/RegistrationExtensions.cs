@@ -38,4 +38,14 @@ public static class RegistrationExtensions
     {
         return new RegistrationBuilder(services).FromClasses(candidates);
     }
+
+    public static IClassSourceResult FromDependencyContext(this IHostApplicationBuilder app, ClassFilterDelegate? predicate = null)
+    {
+        return app.Services.FromDependencyContext(predicate);
+    }
+
+    public static IClassSourceResult FromDependencyContext(this IServiceCollection services, ClassFilterDelegate? predicate = null)
+    {
+        return new RegistrationBuilder(services).FromDependencyContext(predicate);
+    }
 }

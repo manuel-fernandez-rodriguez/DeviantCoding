@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
+using DeviantCoding.Registerly.Strategies.Registration;
 
 namespace DeviantCoding.Registerly.UnitTests
 {

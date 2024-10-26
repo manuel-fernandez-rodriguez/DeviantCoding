@@ -5,9 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 namespace DeviantCoding.Registerly.SelfRegistration;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class RegisterlyAttribute<TMappingStrategy>(ServiceLifetime serviceLifetime) 
-    : RegisterlyAttribute(serviceLifetime, new TMappingStrategy())
-where TMappingStrategy : IMappingStrategy, new()
+public class RegisterlyAttribute<TLifetimeStrategy, TMappingStrategy, TRegistrationStrategy>() 
+    : RegisterlyAttribute(new TLifetimeStrategy(), new TMappingStrategy(), new TRegistrationStrategy())
+    where TLifetimeStrategy : ILifetimeStrategy, new()
+    where TMappingStrategy : IMappingStrategy, new()
+    where TRegistrationStrategy : IRegistrationStrategy, new()
 {
     public new TMappingStrategy MappingStrategy => (TMappingStrategy) base.MappingStrategy ;
 
@@ -16,14 +18,17 @@ where TMappingStrategy : IMappingStrategy, new()
 [AttributeUsage(AttributeTargets.Class)]
 public class RegisterlyAttribute : Attribute
 {
-    public ServiceLifetime ServiceLifetime { get; }
+    public ILifetimeStrategy LifetimeStrategy { get; }
 
     public IMappingStrategy MappingStrategy { get; }
 
-    public RegisterlyAttribute(ServiceLifetime serviceLifetime, IMappingStrategy mappingStrategy)
+    public IRegistrationStrategy RegistrationStrategy { get; }
+
+    public RegisterlyAttribute(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
     {
-        ServiceLifetime = serviceLifetime;
+        LifetimeStrategy = lifetimeStrategy;
         MappingStrategy = mappingStrategy;
+        RegistrationStrategy = registrationStrategy;
     }
 }
 

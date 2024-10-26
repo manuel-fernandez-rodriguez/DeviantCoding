@@ -1,23 +1,18 @@
 ﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
-using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-//public interface IClassSource : IFluentInterface
-//{
-//    IClassSourceResult AddClasses();
-//    IClassSourceResult AddClasses(Func<Type, bool> predicate);
-//}
 
 public interface IClassSelector : IFluentInterface
 {
     IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null);
     IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null);
     IClassSourceResult FromClasses(IEnumerable<Type> candidates);
+    IClassSourceResult FromDependencyContext(ClassFilterDelegate? predicate = null);
     IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 

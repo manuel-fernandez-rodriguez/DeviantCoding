@@ -1,4 +1,5 @@
 ﻿using DeviantCoding.Registerly.Registration;
+using DeviantCoding.Registerly.SelfRegistration;
 using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
@@ -56,6 +57,10 @@ namespace DeviantCoding.Registerly
             return target.Using(new TLifetime(), new TMappingStrategy(), new TRegistrationStrategy());
         }
 
+        public static UsingResult Using(this IClassSourceResult target, RegisterlyAttribute attribute)
+        {
+            return target.Using(attribute.LifetimeStrategy, attribute.MappingStrategy, attribute.RegistrationStrategy);
+        }
         
     }
 }

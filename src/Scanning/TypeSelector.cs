@@ -8,14 +8,9 @@ public delegate bool ClassFilterDelegate(Type type);
 
 internal static class TypeSelector
 {
-    public static IEnumerable<Type> FromDependencyContext()
+    public static IEnumerable<Type> FromDependencyContext(ClassFilterDelegate? typeFilter = null)
     {
-        return FromDependencyContext(DependencyContext.Default, _ => true, _ => true);
-    }
-
-    public static IEnumerable<Type> FromDependencyContext(ClassFilterDelegate typeFilter)
-    {
-        return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter);
+        return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter ?? new ClassFilterDelegate(_ => true));
     }
 
     public static IEnumerable<Type> FromDependencyContext(DependencyContext context, Func<Assembly, bool> assemblyFilter, ClassFilterDelegate typeFilter)

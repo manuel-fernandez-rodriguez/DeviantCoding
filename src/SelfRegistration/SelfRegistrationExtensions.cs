@@ -28,10 +28,8 @@ public static class SelfRegistrationExtensions
         foreach (var implementation in implementationsToRegister)
         {
             var attribute = implementation.GetCustomAttribute<RegisterlyAttribute>()!;
-            var (mappingStrategy, lifetime) = (attribute.MappingStrategy, attribute.ServiceLifetime);
-
             new RegistrationBuilder(serviceCollection).FromClasses([implementation])
-                .Using(lifetime, mappingStrategy)
+                .Using(attribute)
                 .RegisterServices();
         }
 
