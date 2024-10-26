@@ -30,12 +30,12 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IClassS
 
     public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
 
-    IClassSourceQueryable IClassSourceResult.Where(Func<Type, bool> predicate)
+    IClassSourceQueryable IClassSourceResult.Where(ClassFilterDelegate predicate)
     {
         var task = Tasks.LastOrDefault();
         if (task != null)
         {
-            task.Classes = task.Classes.Where(predicate).AsQueryable();
+            task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
         }
         return this;
     }

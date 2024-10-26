@@ -30,7 +30,7 @@ public class ServiceRegistrationTest
     public void Should_aggregate_classes_lifetimes_and_scopes()
     {
         _services
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .FromAssemblyOf<Implementation1>()
             .Where(t=> t.Name == nameof(Implementation1) || t == typeof(Implementation2) || t == typeof(Implementation3))
                 .WithLifetime(ServiceLifetime.Scoped)
                 .WithMappingStrategy<AsSelf>()
@@ -49,7 +49,7 @@ public class ServiceRegistrationTest
     public void Verbose_and_compact_styles_should_be_equivalent()
     {
         TestRegistration(services => services
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .FromAssemblyOf<Implementation1>()
             .Where(t => t.Name == nameof(Implementation1)|| t == typeof(Implementation2) || t == typeof(Implementation3))
                 .WithLifetime(ServiceLifetime.Scoped)
                 .WithMappingStrategy<AsSelf>()
@@ -63,7 +63,7 @@ public class ServiceRegistrationTest
         );
 
         TestRegistration(services => services
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .FromAssemblyOf<Implementation1>()
             .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
                 .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
             .AndAlso(t => t == typeof(Implementation4))

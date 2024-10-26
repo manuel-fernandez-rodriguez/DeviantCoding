@@ -19,7 +19,7 @@ public interface IClassSelector : IFluentInterface
 
 public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector
 {
-    IClassSourceQueryable Where(Func<Type, bool> predicate);
+    IClassSourceQueryable Where(ClassFilterDelegate predicate);
     UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
 }
 
