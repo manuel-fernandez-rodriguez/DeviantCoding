@@ -64,9 +64,9 @@ namespace DeviantCoding.Registerly.Scanning
 
         internal static bool IsRegistrable(this Type type) => type.IsNonAbstractClass(publicOnly: false);
 
-        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterAttribute), true);
+        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterlyAttribute), true);
 
-        internal static RegisterAttribute? GetAutoRegistrationAttribute(this Type type)
+        internal static RegisterlyAttribute? GetAutoRegistrationAttribute(this Type type)
         {
             if (!type.IsNonAbstractClass(publicOnly: false))
             {
@@ -82,9 +82,9 @@ namespace DeviantCoding.Registerly.Scanning
                 var t = attributeType;
                 while (t != null)
                 {
-                    if (t == typeof(RegisterAttribute))
+                    if (t == typeof(RegisterlyAttribute))
                     {
-                        return (RegisterAttribute)attribute;
+                        return (RegisterlyAttribute)attribute;
                     }
                     t = t.BaseType;
                 }

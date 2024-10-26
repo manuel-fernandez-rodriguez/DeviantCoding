@@ -1,4 +1,5 @@
 ﻿using DeviantCoding.Registerly;
+using DeviantCoding.Registerly.Registration;
 using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.SelfRegistration;
 using DeviantCoding.Registerly.Strategies;
@@ -26,12 +27,12 @@ public static class SelfRegistrationExtensions
         
         foreach (var implementation in implementationsToRegister)
         {
-            var attribute = implementation.GetCustomAttribute<RegisterAttribute>()!;
+            var attribute = implementation.GetCustomAttribute<RegisterlyAttribute>()!;
             var (mappingStrategy, lifetime) = (attribute.MappingStrategy, attribute.ServiceLifetime);
 
-            new RegistrationBuilder(serviceCollection, () => [implementation])
+            new RegistrationBuilder(serviceCollection).FromClasses([implementation])
                 .Using(lifetime, mappingStrategy)
-                .Register();
+                .RegisterServices();
         }
 
         return serviceCollection;

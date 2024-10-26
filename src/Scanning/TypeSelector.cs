@@ -3,7 +3,8 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Scanning;
 
-internal delegate bool ClassFilterDelegate(Type type);
+public delegate IEnumerable<Type> SourceSelectorDelegate();
+public delegate bool ClassFilterDelegate(Type type);
 
 internal static class TypeSelector
 {

@@ -1,17 +1,20 @@
 ﻿using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
+using DeviantCoding.Registerly.UnitTests.SampleServices;
+using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
+using System.Runtime.Serialization;
 
 namespace DeviantCoding.Registerly.UnitTests;
 
 public class ServiceRegistrationTest
 {
-    private readonly IHostApplicationBuilder _host = Host.CreateEmptyApplicationBuilder(new());
+    private readonly IServiceCollection _services = new ServiceCollection();
 
     public interface IService1 { }
     public interface IService2 { }
@@ -26,130 +29,134 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_aggregate_classes_lifetimes_and_scopes()
     {
-        _host.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.Name == nameof(Implementation1))
-            .AddClasses(t => t == typeof(Implementation2))
-            .AddClasses(t => t == typeof(Implementation3))
+        _services.FromAssemblies(
+            [Assembly.GetExecutingAssembly()], 
+            t=> t.Name == nameof(Implementation1) || t == typeof(Implementation2) || t == typeof(Implementation3))
                 .WithLifetime(ServiceLifetime.Scoped)
                 .WithMappingStrategy<AsSelf>()
-            .AddClasses(t => t == typeof(Implementation4))
+            .AndAlso( t => t == typeof(Implementation4))
                 .WithLifetime(ServiceLifetime.Singleton)
                 .WithMappingStrategy<AsImplementedInterfaces>()
-            .AddClasses(t => t == typeof(Implementation5))
+            .AndAlso(t => t == typeof(Implementation5))
                 .WithLifetime(ServiceLifetime.Transient)
                 .WithMappingStrategy<AsSelf>()
-            .Register();
+            .RegisterServices();
 
-        VerifyServices(_host);
+        VerifyServices(_services);
     }
 
     [Fact]
     public void Verbose_and_compact_styles_should_be_equivalent()
     {
-        Test(host => host
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
-                .AddClasses(t => t.Name == nameof(Implementation1))
-                .AddClasses(t => t == typeof(Implementation2))
-                .AddClasses(t => t == typeof(Implementation3))
+        TestRegistration(services => services
+            .FromAssemblies([Assembly.GetExecutingAssembly()], 
+                t => t.Name == nameof(Implementation1)|| t == typeof(Implementation2) || t == typeof(Implementation3))
                     .WithLifetime(ServiceLifetime.Scoped)
                     .WithMappingStrategy<AsSelf>()
-                .AddClasses(t => t == typeof(Implementation4))
+                .AndAlso(t => t == typeof(Implementation4))
                     .WithLifetime(ServiceLifetime.Singleton)
                     .WithMappingStrategy<AsImplementedInterfaces>()
-                .AddClasses(t => t == typeof(Implementation5))
+                .AndAlso(t => t == typeof(Implementation5))
                     .WithLifetime(ServiceLifetime.Transient)
                     .WithMappingStrategy<AsSelf>()
-                .Register()
+                .RegisterServices()
         );
 
-        Test(host => host
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
-                .AddClasses(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+        TestRegistration(services => services
+            .FromAssemblies([Assembly.GetExecutingAssembly()],
+                    t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
                     .Using(ServiceLifetime.Scoped, MappingStrategyEnum.AsSelf)
-                .AddClasses(t => t == typeof(Implementation4))
+                .AndAlso(t => t == typeof(Implementation4))
                     .Using(ServiceLifetime.Singleton, MappingStrategyEnum.AsImplementedInterfaces)
-                .AddClasses(t => t == typeof(Implementation5))
+                .AndAlso(t => t == typeof(Implementation5))
                     .Using(ServiceLifetime.Transient, MappingStrategyEnum.AsSelf)
-                .Register()
+                .RegisterServices()
         );
 
-        Test(host => host
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
-                .AddClasses(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
+        TestRegistration(services => services
+            .FromAssemblies([Assembly.GetExecutingAssembly()],
+                    t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2), typeof(Implementation3) }.Contains(t))
                     .Using<Scoped, AsSelf>()
-                .AddClasses(t => t == typeof(Implementation4))
+                .AndAlso(t => t == typeof(Implementation4))
                     .Using<Singleton>()
-                .AddClasses(t => t == typeof(Implementation5))
+                .AndAlso(t => t == typeof(Implementation5))
                     .Using<Transient, AsSelf>()
-                .Register()
+                .RegisterServices()
         );
-
-
     }
 
     [Fact]
-    public void Should_apply_default_strategy()
+    public void Should_get_source_from_the_assembly_of_a_given_type()
     {
-        Test(host => host
-           .FromClasses(Classes)
-           .Register(),
-           VerifyServices2
-       );
-    }
-
-    [Fact]
-    public void Should_apply_default_strategy2()
-    {
-        Test(host => host
+        TestRegistration(services => services
             .FromAssemblyOf<IService1>()
-                .AddClasses()
-                .Register(),
+            .RegisterServices(),
             VerifyServices2
         );
     }
 
     [Fact]
+    public void Should_get_source_from_given_classes()
+    {
+        TestRegistration(services => services
+           .FromClasses(Classes)
+           .RegisterServices(),
+           VerifyServices2
+       );
+    }
+
+    [Fact]
     public void Should_apply_default_lifetime()
     {
-        _host.FromAssemblies([Assembly.GetExecutingAssembly()])
-            .AddClasses(t => t.Name == nameof(Implementation1))
-            .AddClasses(t => t == typeof(Implementation2))
-            .AddClasses(t => t == typeof(Implementation3))
-            .AddClasses(t => t == typeof(Implementation4))
-            .AddClasses(t => t == typeof(Implementation5))
-            .Register();
+        _services.FromClasses(Classes)
+            .RegisterServices();
 
-        _host.Services
+        _services
             .Where(s => s.ServiceType == typeof(IService1) || s.ServiceType == typeof(IService2))
             .Should().OnlyContain(o => o.Lifetime == ServiceLifetime.Scoped);
     }
 
-    private static void Test(Action<IHostApplicationBuilder> action, Action<IHostApplicationBuilder>? verify = null)
+    [Fact]
+    public void Should_chain_sources()
+    {
+        TestRegistration(services => services
+            .FromClasses(Classes)
+            .FromAssemblyOf<Exception>(t => t == typeof(Exception))
+            .RegisterServices(),
+            services => 
+            {
+                VerifyServices2(services);
+                services.Should().HaveSingleRegistrationFor<ISerializable, Exception>(ServiceLifetime.Scoped);
+            }
+       );
+    }
+
+    private static void TestRegistration(Action<IServiceCollection> action, Action<IServiceCollection>? verify = null)
     {
         verify = verify ?? VerifyServices;
 
-        IHostApplicationBuilder host = Host.CreateEmptyApplicationBuilder(new());
-        action(host);
-        verify(host);
+        var services = new ServiceCollection();
+        action(services);
+        verify(services);
     }
 
-    private static void VerifyServices(IHostApplicationBuilder host)
+    private static void VerifyServices(IServiceCollection services)
     {
-        host.Services.Should().HaveSingleRegistrationFor<Implementation1, Implementation1>(ServiceLifetime.Scoped);
-        host.Services.Should().HaveSingleRegistrationFor<Implementation2, Implementation2>(ServiceLifetime.Scoped);
-        host.Services.Should().HaveSingleRegistrationFor<Implementation3, Implementation3>(ServiceLifetime.Scoped);
-        host.Services.Should().HaveSingleRegistrationFor<IService2, Implementation4>(ServiceLifetime.Singleton);
-        host.Services.Should().HaveSingleRegistrationFor<Implementation5, Implementation5>(ServiceLifetime.Transient);
+        services.Should().HaveSingleRegistrationFor<Implementation1, Implementation1>(ServiceLifetime.Scoped);
+        services.Should().HaveSingleRegistrationFor<Implementation2, Implementation2>(ServiceLifetime.Scoped);
+        services.Should().HaveSingleRegistrationFor<Implementation3, Implementation3>(ServiceLifetime.Scoped);
+        services.Should().HaveSingleRegistrationFor<IService2, Implementation4>(ServiceLifetime.Singleton);
+        services.Should().HaveSingleRegistrationFor<Implementation5, Implementation5>(ServiceLifetime.Transient);
     }
 
-    private static void VerifyServices2(IHostApplicationBuilder host)
+    private static void VerifyServices2(IServiceCollection services)
     {
-        host.Services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
+        services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
             .And.Contain(s => s.ImplementationType == typeof(Implementation1))
             .And.Contain(s => s.ImplementationType == typeof(Implementation2))
             .And.Contain(s => s.ImplementationType == typeof(Implementation3));
 
-        host.Services.Where(s => s.ServiceType == typeof(IService2)).Should().HaveCount(2)
+        services.Where(s => s.ServiceType == typeof(IService2)).Should().HaveCount(2)
             .And.Contain(s => s.ImplementationType == typeof(Implementation4))
             .And.Contain(s => s.ImplementationType == typeof(Implementation5));
     }

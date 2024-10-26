@@ -46,7 +46,7 @@ namespace DeviantCoding.Registerly.UnitTests
             {
                 type.IsMarkedForAutoRegistration()
                     .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
-                type.IsDefined(typeof(RegisterAttribute), true)
+                type.IsDefined(typeof(RegisterlyAttribute), true)
                     .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
 
             }

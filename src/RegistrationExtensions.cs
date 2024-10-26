@@ -9,24 +9,24 @@ namespace DeviantCoding.Registerly;
 
 public static class RegistrationExtensions
 {
-    public static IClassSource FromAssemblies(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
+    public static IClassSourceResult FromAssemblies(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
     {
-        return app.Services.FromAssemblies(assemblies);
+        return app.Services.FromAssemblies(assemblies, predicate);
     }
 
-    public static IClassSource FromAssemblies(this IServiceCollection services, IEnumerable<Assembly> assemblies)
+    public static IClassSourceResult FromAssemblies(this IServiceCollection services, IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
     {
-        return new RegistrationBuilder(services, () => TypeSelector.FromAssemblies(assemblies));
+        return new RegistrationBuilder(services).FromAssemblies(assemblies, predicate);
     }
 
-    public static IClassSource FromAssemblyOf<T>(this IHostApplicationBuilder app)
+    public static IClassSourceResult FromAssemblyOf<T>(this IHostApplicationBuilder app, ClassFilterDelegate? predicate = null)
     {
-        return app.Services.FromAssemblyOf<T>();
+        return app.Services.FromAssemblyOf<T>(predicate);
     }
 
-    public static IClassSource FromAssemblyOf<T>(this IServiceCollection services)
+    public static IClassSourceResult FromAssemblyOf<T>(this IServiceCollection services, ClassFilterDelegate? predicate = null)
     {
-        return new RegistrationBuilder(services, () => TypeSelector.FromAssemblies([typeof(T).Assembly]));
+        return new RegistrationBuilder(services).FromAssemblies([typeof(T).Assembly], predicate);
     }
 
     public static IClassSourceResult FromClasses(this IHostApplicationBuilder app, IEnumerable<Type> candidates)
@@ -36,6 +36,6 @@ public static class RegistrationExtensions
 
     public static IClassSourceResult FromClasses(this IServiceCollection services, IEnumerable<Type> candidates)
     {
-        return new RegistrationBuilder(services, () => TypeSelector.FromClasses(candidates));
+        return new RegistrationBuilder(services).FromClasses(candidates);
     }
 }

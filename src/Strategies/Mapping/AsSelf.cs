@@ -6,14 +6,9 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
 {
     public class AsSelf : IMappingStrategy
     {
-        public IEnumerable<ServiceDescriptor> Map(Type implementationType, ServiceLifetime serviceLifetime)
+        public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
         {
-            return [new ServiceDescriptor(implementationType, implementationType, serviceLifetime)];
-        }
-
-        public IServiceCollection RegisterServices(IServiceCollection serviceCollection, IEnumerable<ServiceDescriptor> descriptors, ServiceLifetime serviceLifetime)
-        {
-            throw new NotImplementedException();
+            return [new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Lifetime)];
         }
     }
 }

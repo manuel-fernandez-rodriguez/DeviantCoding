@@ -1,0 +1,110 @@
+﻿using DeviantCoding.Registerly.Scanning;
+using DeviantCoding.Registerly.Strategies;
+using DeviantCoding.Registerly.Strategies.Lifetime;
+using DeviantCoding.Registerly.Strategies.Mapping;
+using DeviantCoding.Registerly.Strategies.Registration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
+
+namespace DeviantCoding.Registerly.Registration;
+
+internal class RegistrationBuilder(IServiceCollection serviceCollection)
+    : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult
+{
+    private class RegistrationTask
+    {
+        public required SourceSelectorDelegate SourceSelector { get; init; }
+        public required ClassFilterDelegate ServiceSelector { get; init; }
+        public IMappingStrategy? MappingStrategy { get; set; }
+        public IRegistrationStrategy? RegistrationStrategy { get; set; }
+        public ILifetimeStrategy? LifetimeStrategy { get; set; }
+    }
+
+    private List<RegistrationTask> Tasks { get; } = [];
+
+    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null)
+    {
+        return InitRegistrationTasks(() => TypeSelector.FromAssemblies(assemblies), predicate);
+    }
+
+    public IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null)
+    {
+        return InitRegistrationTasks(() => TypeSelector.FromAssemblies([typeof(T).Assembly]), predicate);
+    }
+
+    public IClassSourceResult FromClasses(IEnumerable<Type> candidates)
+    {
+        return InitRegistrationTasks(() => TypeSelector.FromClasses(candidates));
+    }
+
+    public IClassSourceResult AndAlso(ClassFilterDelegate predicate)
+    {
+        if (Tasks.Count == 0)
+        {
+            throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
+        }
+        return InitRegistrationTasks(Tasks.Last().SourceSelector, predicate);
+    }
+
+    public UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
+    {
+        foreach (var task in Tasks)
+        {
+            task.LifetimeStrategy ??= lifetimeStrategy;
+            task.MappingStrategy ??= mappingStrategy;
+            task.RegistrationStrategy ??= registrationStrategy;
+        }
+        return this;
+    }
+
+    public ILifetimeDefinitionResult WithLifetime(ILifetimeStrategy serviceLifetime)
+    {
+        Using(serviceLifetime, null!, null!);
+        return this;
+    }
+
+    public IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy mappingStrategy)
+    {
+        Using(null!, mappingStrategy, null!);
+        return this;
+    }
+
+    public IMappingStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
+    {
+        Using(null!, null!, registrationStrategy);
+        return this;
+    }
+
+    public IServiceCollection RegisterServices()
+    {
+        foreach (var task in Tasks)
+        {
+            foreach (var candidate in task.SourceSelector())
+            {
+                if (task.ServiceSelector(candidate))
+                {
+                    var serviceLifetime = task.LifetimeStrategy ?? new Scoped();
+                    var mappingStrategy = task.MappingStrategy ?? new AsImplementedInterfaces();
+                    var registrationStrategy = task.RegistrationStrategy ?? new AddRegistrationStrategy();
+
+                    var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
+                    registrationStrategy!.RegisterServices(serviceCollection, descriptors);
+                }
+            }
+        }
+
+        return serviceCollection;
+    }
+
+    private IClassSourceResult InitRegistrationTasks(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
+    {
+        Tasks.Add(new RegistrationTask
+        {
+            SourceSelector = sourceSelector,
+            ServiceSelector = new ClassFilterDelegate(serviceSelector ?? (_ => true))
+        });
+        return this;
+    }
+}

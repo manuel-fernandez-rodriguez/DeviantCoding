@@ -1,4 +1,5 @@
-﻿using DeviantCoding.Registerly.Strategies;
+﻿using DeviantCoding.Registerly.Scanning;
+using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
@@ -6,40 +7,34 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-public interface IClassSource : IFluentInterface
+//public interface IClassSource : IFluentInterface
+//{
+//    IClassSourceResult AddClasses();
+//    IClassSourceResult AddClasses(Func<Type, bool> predicate);
+//}
+
+public interface IClassSelector : IFluentInterface
 {
-    IClassSourceResult AddClasses();
-    IClassSourceResult AddClasses(Func<Type, bool> predicate);
+    IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? predicate = null);
+    IClassSourceResult FromAssemblyOf<T>(ClassFilterDelegate? predicate = null);
+    IClassSourceResult FromClasses(IEnumerable<Type> candidates);
+    IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
-public interface IClassSourceResult : IClassSource, ILifetimeDefinition, IRegisterServices
+
+public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector
 {
-    UsingResult Using(ServiceLifetime lifetime);
-    UsingResult Using(ServiceLifetime lifetime, MappingStrategyEnum mappingStrategy);
-    UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy);
-    UsingResult Using(ServiceLifetime lifetime, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
-
-    UsingResult Using<TLifetime>()
-        where TLifetime : ILifetimeStrategy, new();
-
-    UsingResult Using<TLifetime, TMappingStrategy>()
-        where TLifetime : ILifetimeStrategy, new()
-        where TMappingStrategy : IMappingStrategy, new();
-
-    UsingResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>() 
-        where TLifetime : ILifetimeStrategy, new()
-        where TMappingStrategy : IMappingStrategy, new()
-        where TRegistrationStrategy : IRegistrationStrategy, new();
+    UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
 }
 
-public interface  UsingResult : IClassSource, IRegisterServices
+public interface  UsingResult : IClassSourceResult, IRegisterServices, IClassSelector
 {
     
 }
 
-public interface ILifetimeDefinition : IClassSource
+public interface ILifetimeDefinition : IFluentInterface, IRegisterServices
 {
-    ILifetimeDefinitionResult WithLifetime(ServiceLifetime serviceLifetime);
+    ILifetimeDefinitionResult WithLifetime(ILifetimeStrategy serviceLifetime);
 }
 
 public interface ILifetimeDefinitionResult : IMappingStrategyDefinition
@@ -48,24 +43,22 @@ public interface ILifetimeDefinitionResult : IMappingStrategyDefinition
 
 public interface IMappingStrategyDefinition : IFluentInterface
 {
-    IMappingStrategyDefinitionResult WithMappingStrategy<TStrategy>() where TStrategy : IMappingStrategy, new();
     IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy mappingStrategy);
 }
 
-public interface IMappingStrategyDefinitionResult : IRegistrationStrategyDefinition, IRegisterServices, IClassSource
+public interface IMappingStrategyDefinitionResult : IRegistrationStrategyDefinition, IRegisterServices, IClassSourceResult, IClassSelector
 {
 }
 
-public interface IRegistrationStrategyDefinition : IFluentInterface, IRegisterServices, IClassSource
+public interface IRegistrationStrategyDefinition : IFluentInterface, IRegisterServices, IClassSourceResult
 {
-    IMappingStrategyDefinitionResult WithRegistrationStrategy<TStrategy>() where TStrategy : IRegistrationStrategy, new();
     IMappingStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy);
 }
 
 
 public interface IRegisterServices : IFluentInterface
 {
-    IServiceCollection Register();
+    IServiceCollection RegisterServices();
 }
 
 
