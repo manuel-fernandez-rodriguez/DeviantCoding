@@ -3,13 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
+using static DeviantCoding.Registerly.UnitTests.ServiceRegistrationTest;
 
 namespace DeviantCoding.Registerly.UnitTests
 {
     public class TypeScannerTests
     {
-        [Scoped] public class TypeScannerClass1 { }
-        [Singleton] public class TypeScannerClass2 { }
+        public interface ITypeScannerInterface1 { }
+        [Scoped] public class TypeScannerClass1 : ITypeScannerInterface1 { }
+        [Singleton] public class TypeScannerClass2 : ITypeScannerInterface1 { }
         [Transient<AsSelf>] public class TypeScannerClass3 { }
         [Singleton<AsSelf>] public class TypeScannerClass4 { }
 
@@ -21,7 +23,7 @@ namespace DeviantCoding.Registerly.UnitTests
             ];
 
         [Fact]
-        public void FromDependencyContext()
+        public void Should_succesfully_execute_FromDependencyContext()
         {
             var types = TypeScanner
                 .FromDependencyContext()
@@ -31,7 +33,7 @@ namespace DeviantCoding.Registerly.UnitTests
         }
 
         [Fact]
-        public void FromAssemblyNames()
+        public void Should_succesfully_execute_FromAssemblyNames()
         {
             var types = TypeScanner
                 .FromAssemblyNames([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
@@ -41,7 +43,7 @@ namespace DeviantCoding.Registerly.UnitTests
         }
 
         [Fact]
-        public void ShouldResolveAsSelfAttribute()
+        public void Should_resolve_RegisterlyAttribute()
         {
             foreach (var type in DecoratedTypes)
             {
@@ -51,6 +53,15 @@ namespace DeviantCoding.Registerly.UnitTests
                     .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
 
             }
+        }
+
+        [Fact]
+        public void Should_apply_AssignableTo()
+        {
+            TypeScanner.FromClasses(DecoratedTypes)
+                .Where(t => t.AssignableTo<ITypeScannerInterface1>())
+                .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
+
         }
     }
 }

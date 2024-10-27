@@ -102,7 +102,7 @@ public class ServiceRegistrationTest
             .RegisterServices();
 
         _services
-            .Where(s => s.ServiceType == typeof(IService1) || s.ServiceType == typeof(IService2))
+            .Where(s => s.ServiceType.IsExactly<IService1>() || s.ServiceType.IsExactly<IService2>())
             .Should().OnlyContain(o => o.Lifetime == ServiceLifetime.Scoped);
     }
 
@@ -112,7 +112,7 @@ public class ServiceRegistrationTest
         TestRegistration(services => services
             .FromClasses(Classes)
             .FromAssemblyOf<Exception>()
-            .Where(t => t == typeof(Exception))
+            .Where(t => t.IsExactly<Exception>())
             .RegisterServices(),
             services => 
             {
@@ -126,15 +126,15 @@ public class ServiceRegistrationTest
     public void Should_register_as_designated_type()
     {
         var services = _services
-            .FromAssemblies([Assembly.GetExecutingAssembly()])
+            .FromClasses(Classes)
             .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2) }.Contains(t)) 
             .As<IService1>()
             .RegisterServices();
 
         services.Should().HaveCount(2);
-        services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(2)
-            .And.Contain(s => s.ImplementationType == typeof(Implementation1))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation2));
+        services.Where(s => s.ServiceType.IsExactly<IService1>()).Should().HaveCount(2)
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation1>())
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation2>());
     }
 
     [Fact]
@@ -142,9 +142,9 @@ public class ServiceRegistrationTest
     {
         var services = _services
             .FromClasses(Classes)
-            .Where(t => t == typeof(Implementation1))
+            .Where(t => t.IsExactly<Implementation1>())
                 .WithFactory<IService1>(s => new Implementation1 { Value = "potato1" })
-            .AndAlso(t => t == typeof(Implementation1))
+            .AndAlso(t => t.IsExactly<Implementation1>())
                 .WithFactory( s => new Implementation1 {  Value = "potato2"})
             .RegisterServices();
 
@@ -175,13 +175,13 @@ public class ServiceRegistrationTest
     private static void VerifyServices2(IServiceCollection services)
     {
         services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
-            .And.Contain(s => s.ImplementationType == typeof(Implementation1))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation2))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation3));
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation1>())
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation2>())
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation3>());
 
         services.Where(s => s.ServiceType == typeof(IService2)).Should().HaveCount(2)
-            .And.Contain(s => s.ImplementationType == typeof(Implementation4))
-            .And.Contain(s => s.ImplementationType == typeof(Implementation5));
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation4>())
+            .And.Contain(s => s.ImplementationType.IsExactly<Implementation5>());
     }
 
 }

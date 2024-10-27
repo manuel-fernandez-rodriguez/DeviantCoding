@@ -22,46 +22,6 @@ namespace DeviantCoding.Registerly.Scanning
             }
         }
 
-        internal static bool IsNonAbstractClass(this Type type, bool publicOnly)
-        {
-            if (type.IsSpecialName)
-            {
-                return false;
-            }
-
-            if (type.IsClass && !type.IsAbstract)
-            {
-                if (type.HasAttribute<CompilerGeneratedAttribute>())
-                {
-                    return false;
-                }
-
-                if (publicOnly)
-                {
-                    return type.IsPublic || type.IsNestedPublic;
-                }
-
-                return true;
-            }
-
-            return false;
-        }
-
-        internal static bool HasAttribute(this Type type, Type attributeType)
-        {
-            return type.IsDefined(attributeType, inherit: true);
-        }
-
-        internal static bool HasAttribute<T>(this Type type) where T : Attribute
-        {
-            return type.HasAttribute(typeof(T));
-        }
-
-        internal static bool HasAttribute<T>(this Type type, Func<T, bool> predicate) where T : Attribute
-        {
-            return type.GetCustomAttributes<T>(inherit: true).Any(predicate);
-        }
-
         internal static bool IsRegistrable(this Type type) => type.IsNonAbstractClass(publicOnly: false);
 
         internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterlyAttribute), true);

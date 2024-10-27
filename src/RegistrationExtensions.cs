@@ -1,6 +1,4 @@
 ﻿using DeviantCoding.Registerly.Registration;
-using DeviantCoding.Registerly.Scanning;
-using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -28,6 +26,17 @@ public static class RegistrationExtensions
     {
         return new RegistrationBuilder(services).FromAssemblies([typeof(T).Assembly]);
     }
+
+    public static IClassSourceResult FromAssembliesOf(this IHostApplicationBuilder app, params Type[] types)
+    {
+        return app.Services.FromAssembliesOf(types);
+    }
+
+    public static IClassSourceResult FromAssembliesOf(this IServiceCollection services, params Type[] types)
+    {
+        return new RegistrationBuilder(services).FromAssemblies(types.Select(t => t.Assembly));
+    }
+
 
     public static IClassSourceResult FromClasses(this IHostApplicationBuilder app, IEnumerable<Type> candidates)
     {
