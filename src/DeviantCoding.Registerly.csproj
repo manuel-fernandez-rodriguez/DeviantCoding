@@ -6,10 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Label="Nuget package data">
+    <IsDeviantCodingPackage>true</IsDeviantCodingPackage>
+    <Description>Dependency injection made easy</Description>
+    <PackageTags>DI;Dependency;Injection;</PackageTags> 
+    <Version>1.0.0-alpha</Version>
+    <PackageReleaseNotes>Alpha version for internal testing.</PackageReleaseNotes>
+  </PropertyGroup>
+
   <ItemGroup>
-    <InternalsVisibleTo Include="DeviantCoding.Registerly.UnitTests" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
