@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup Label="Package information">
+    <Authors>DeviantCoding</Authors>
+    <Company>DeviantCoding</Company>
+    <Copyright>DeviantCoding</Copyright>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+    
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,117 @@
+<Project>
+
+  <!--
+  _   _                          _       ____                   _                                 
+ | \ | |  _   _    __ _    ___  | |_    |  _ \    __ _    ___  | | __   __ _    __ _    ___   ___ 
+ |  \| | | | | |  / _` |  / _ \ | __|   | |_) |  / _` |  / __| | |/ /  / _` |  / _` |  / _ \ / __|
+ | |\  | | |_| | | (_| | |  __/ | |_    |  __/  | (_| | | (__  |   <  | (_| | | (_| | |  __/ \__ \
+ |_| \_|  \__,_|  \__, |  \___|  \__|   |_|      \__,_|  \___| |_|\_\  \__,_|  \__, |  \___| |___/
+                  |___/                                                        |___/                
+  -->
+  
+  <PropertyGroup
+    Label="Default properties for DeviantCoding Nuget Packages"
+    Condition=" $(IsDeviantCodingNugetPackage) == true ">
+
+    <AddSourceLinkSupport>true</AddSourceLinkSupport>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <Title Condition=" '$(Title)' == ''">$(AssemblyName)</Title>
+    <PackageId Condition=" '$(PackageId)' == ''">$(AssemblyName)</PackageId>
+    <RepositoryUrl Condition=" '$(RepositoryUrl)' == ''">https://github.com/manuel-fernandez-rodriguez/DeviantCoding/</RepositoryUrl>
+    <PackageProjectUrl Condition=" '$(PackageProjectUrl)' == ''">https://github.com/manuel-fernandez-rodriguez/DeviantCoding/</PackageProjectUrl>
+    <PackageReadmeFile Condition=" '$(PackageReadmeFile)' == ''">README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup
+    Label="Default properties for DeviantCoding Nuget Packages"
+    Condition=" $(IsDeviantCodingPackage) == true ">
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+    <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests" />
+    <InternalsVisibleTo Include="$(AssemblyName).UnitTests" />
+  </ItemGroup>
+    
+  
+  <!-- 
+  _____                _       ____                     _                 _         
+ |_   _|   ___   ___  | |_    |  _ \   _ __    ___     (_)   ___    ___  | |_   ___ 
+   | |    / _ \ / __| | __|   | |_) | | '__|  / _ \    | |  / _ \  / __| | __| / __|
+   | |   |  __/ \__ \ | |_    |  __/  | |    | (_) |   | | |  __/ | (__  | |_  \__ \
+   |_|    \___| |___/  \__|   |_|     |_|     \___/   _/ |  \___|  \___|  \__| |___/
+                                                     |__/                           
+  -->
+
+  <ItemGroup
+    Label="Configuration for Test Projects"
+    Condition=" $(IsDeviantCodingTestProject) == true ">
+
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+    
+    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="0.33.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageReference Include="Verify.Http" Version="5.0.1" />
+    <PackageReference Include="Verify.Xunit" Version="22.11.5" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="3.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
+  <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+  </PackageReference>
+
+    <Using Include="Xunit" />
+    <Using Include="FluentAssertions" />
+  </ItemGroup>
+
+
+  <!-- 
+   ____                                                 
+  / ___|   ___    _ __ ___    _ __ ___     ___    _ __  
+ | |      / _ \  | '_ ` _ \  | '_ ` _ \   / _ \  | '_ \ 
+ | |___  | (_) | | | | | | | | | | | | | | (_) | | | | |
+  \____|  \___/  |_| |_| |_| |_| |_| |_|  \___/  |_| |_|
+                                                        
+  -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup 
+    Label="SourceLink Support"
+    Condition=" $(AddSourceLinkSupport) == true ">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>True</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup
+    Label="SourceLink Support"
+    Condition=" $(AddSourceLinkSupport) == true ">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+  
+</Project>
