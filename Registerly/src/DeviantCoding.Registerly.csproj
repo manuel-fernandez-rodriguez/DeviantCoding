@@ -12,10 +12,12 @@
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
     <Version>1.0.0-alpha</Version>
     <PackageReleaseNotes>Alpha version for internal testing.</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+    <None Include="../LICENSE.txt" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
