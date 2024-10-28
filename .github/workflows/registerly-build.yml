@@ -25,6 +25,7 @@ jobs:
          chmod +x ./Registerly/build.sh
          cd ./Registerly/
          ./build.sh
+         pwd
       shell: bash
     - name: Publish artifact
       uses: actions/upload-artifact@v4
