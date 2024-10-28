@@ -26,3 +26,8 @@ jobs:
          cd ./Registerly/
          ./build.sh
       shell: bash
+    - name: Publish artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DeviantCoding.Registerly.${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        path: /Registerly/src/bin/Release/*.nupkg
