@@ -23,5 +23,6 @@ jobs:
     - name: Build
       run: |
          chmod +x ./Registerly/build.sh
-         ./Registerly/build.sh
+         cd ./Registerly/
+         ./build.sh
       shell: bash
