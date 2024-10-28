@@ -1,5 +1,4 @@
 ﻿using DeviantCoding.Registerly.SelfRegistration;
-using DeviantCoding.Registerly.Strategies.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -15,7 +14,7 @@ namespace DeviantCoding.Registerly.Strategies.Lifetime
         {
             return implementationType
                 .GetCustomAttribute<RegisterlyAttribute>()?.
-                LifetimeStrategy.Map(implementationType)
+                LifetimeStrategy?.Map(implementationType)
                 ?? ServiceLifetime.Scoped;
         }
     }

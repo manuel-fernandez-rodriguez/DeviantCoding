@@ -10,10 +10,17 @@ public class AttributeRegistrationStrategy : IRegistrationStrategy
     {
         foreach (var descriptor in descriptors)
         {
-            descriptor.ImplementationType?
+            var registrationStrategy = descriptor.ImplementationType?
                 .GetCustomAttribute<RegisterlyAttribute>()?
-                .RegistrationStrategy
-                .RegisterServices(serviceCollection, [descriptor]);
+                .RegistrationStrategy;
+            
+            if (registrationStrategy != null)
+            {
+                registrationStrategy.RegisterServices(serviceCollection, [descriptor]);
+                continue;
+            }
+            
+            new AddRegistrationStrategy().RegisterServices(serviceCollection, [descriptor]);
         }
 
         return serviceCollection;

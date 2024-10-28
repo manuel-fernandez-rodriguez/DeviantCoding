@@ -1,8 +1,6 @@
 ﻿using DeviantCoding.Registerly;
 using DeviantCoding.Registerly.Registration;
 using DeviantCoding.Registerly.Scanning;
-using DeviantCoding.Registerly.SelfRegistration;
-using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;

@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, UsingResult, IQueryable<Type>
+internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, IUsingResult, IQueryable<Type>
 {
     private readonly IServiceCollection _serviceCollection;
 
@@ -52,7 +52,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappin
         return Tasks.AddNew(Tasks.Last().SourceSelector, predicate); ;
     }
 
-    UsingResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
+    IUsingResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
     {
         foreach (var task in Tasks)
         {

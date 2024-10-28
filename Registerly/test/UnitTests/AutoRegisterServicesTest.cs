@@ -6,30 +6,28 @@ namespace DeviantCoding.Registerly.UnitTests;
 
 public class AutoRegisterServicesTest
 {
-    private readonly IHostApplicationBuilder _host = Host.CreateEmptyApplicationBuilder(new());
+    private readonly IServiceCollection _services = new ServiceCollection();
 
     [Fact]
     public void AutoRegisterServicesFromDefaultDependencyContext()
     {
-        _host.AutoRegisterServices();
-        
-        Assert(_host.Services);
+        Assert(_services.AutoRegisterServices());
     }
 
     [Fact]
     public void AutoRegisterServicesFromAssemblies()
     {
-        _host.AutoRegisterServices([GetType().Assembly]);
-
-        Assert(_host.Services);
+        Assert(_services.AutoRegisterServices([GetType().Assembly]));
     }
 
     [Fact]
     public void ResolveServices()
     {
-        _host.AutoRegisterServices();
+        var host = Host.CreateEmptyApplicationBuilder(new());
 
-        var services = _host.Services.BuildServiceProvider();
+        host.AutoRegisterServices();
+
+        var services = host.Services.BuildServiceProvider();
 
         services.GetRequiredService<IScopedService>()
             .Should().BeOfType<TestScopedService>();

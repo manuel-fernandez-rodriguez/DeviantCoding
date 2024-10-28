@@ -20,11 +20,11 @@ public interface IClassSelector : IFluentInterface
 public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector, IMappingStrategyDefinition
 {
     IClassSourceResult Where(ClassFilterDelegate predicate);
-    UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
+    IUsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
     IQueryable<Type> Classes { get; }
 }
 
-public interface  UsingResult : IClassSourceResult, IRegisterServices, IClassSelector
+public interface  IUsingResult : IClassSourceResult, IRegisterServices, IClassSelector
 {
     
 }

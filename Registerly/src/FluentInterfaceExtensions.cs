@@ -1,5 +1,4 @@
 ﻿using DeviantCoding.Registerly.Registration;
-using DeviantCoding.Registerly.SelfRegistration;
 using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
@@ -43,28 +42,28 @@ namespace DeviantCoding.Registerly
                 _ => throw new NotImplementedException()
             };
 
-        public static UsingResult Using<TLifetime>(this IClassSourceResult target)
+        public static IUsingResult Using<TLifetime>(this IClassSourceResult target)
             where TLifetime : ILifetimeStrategy, new()
             => target.Using<TLifetime, AsImplementedInterfaces>();
 
         public static ILifetimeDefinitionResult WithLifetime(this ILifetimeDefinition target, ServiceLifetime serviceLifetime)
             => target.WithLifetime(serviceLifetime.ToStrategy());
 
-        public static UsingResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
+        public static IUsingResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
             where TLifetime : ILifetimeStrategy, new()
             where TMappingStrategy : IMappingStrategy, new()
             => target.Using<TLifetime, TMappingStrategy, AddRegistrationStrategy>();
 
-        public static UsingResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>(this IClassSourceResult target)
+        public static IUsingResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>(this IClassSourceResult target)
             where TLifetime : ILifetimeStrategy, new()
             where TMappingStrategy : IMappingStrategy, new()
             where TRegistrationStrategy : IRegistrationStrategy, new()
             => target.Using(new TLifetime(), new TMappingStrategy(), new TRegistrationStrategy());
 
-        public static UsingResult Using(this IClassSourceResult target, ServiceLifetime lifetime)
+        public static IUsingResult Using(this IClassSourceResult target, ServiceLifetime lifetime)
             => target.Using(lifetime.ToStrategy(), null!, null!);
 
-        public static UsingResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
+        public static IUsingResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
             => target.Using(lifetime.ToStrategy(), mappingStrategy, null!);
     }
 }

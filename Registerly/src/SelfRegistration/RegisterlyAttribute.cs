@@ -1,6 +1,4 @@
 ﻿using DeviantCoding.Registerly.Strategies;
-using DeviantCoding.Registerly.Strategies.Mapping;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DeviantCoding.Registerly.SelfRegistration;
 
@@ -9,26 +7,15 @@ public class RegisterlyAttribute<TLifetimeStrategy, TMappingStrategy, TRegistrat
     : RegisterlyAttribute(new TLifetimeStrategy(), new TMappingStrategy(), new TRegistrationStrategy())
     where TLifetimeStrategy : ILifetimeStrategy, new()
     where TMappingStrategy : IMappingStrategy, new()
-    where TRegistrationStrategy : IRegistrationStrategy, new()
-{
-    public new TMappingStrategy MappingStrategy => (TMappingStrategy) base.MappingStrategy ;
-
-}
+    where TRegistrationStrategy : IRegistrationStrategy, new();
 
 [AttributeUsage(AttributeTargets.Class)]
-public class RegisterlyAttribute : Attribute
+public class RegisterlyAttribute(ILifetimeStrategy? lifetimeStrategy, IMappingStrategy? mappingStrategy, IRegistrationStrategy? registrationStrategy) : Attribute
 {
-    public ILifetimeStrategy LifetimeStrategy { get; }
+    public ILifetimeStrategy? LifetimeStrategy { get; } = lifetimeStrategy;
 
-    public IMappingStrategy MappingStrategy { get; }
+    public IMappingStrategy? MappingStrategy { get; } = mappingStrategy;
 
-    public IRegistrationStrategy RegistrationStrategy { get; }
-
-    public RegisterlyAttribute(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
-    {
-        LifetimeStrategy = lifetimeStrategy;
-        MappingStrategy = mappingStrategy;
-        RegistrationStrategy = registrationStrategy;
-    }
+    public IRegistrationStrategy? RegistrationStrategy { get; } = registrationStrategy;
 }
 

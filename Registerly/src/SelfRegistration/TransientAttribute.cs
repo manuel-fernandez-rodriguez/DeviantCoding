@@ -1,19 +1,16 @@
-﻿using DeviantCoding.Registerly.Strategies.Mapping;
-using DeviantCoding.Registerly.Strategies;
+﻿using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
-using DeviantCoding.Registerly.Strategies.Registration;
 
 namespace DeviantCoding.Registerly.SelfRegistration;
 
+[AttributeUsage(AttributeTargets.Class)]
+public class TransientAttribute() : RegisterlyAttribute(new Transient(), null, null);
 
 [AttributeUsage(AttributeTargets.Class)]
-public class TransientAttribute() : TransientAttribute<AsImplementedInterfaces>();
-
-[AttributeUsage(AttributeTargets.Class)]
-public class TransientAttribute<TMappingStrategy>() : TransientAttribute<TMappingStrategy, AddRegistrationStrategy>()
+public class TransientAttribute<TMappingStrategy>() : RegisterlyAttribute(new Transient(), new TMappingStrategy(), null)
     where TMappingStrategy : IMappingStrategy, new();
 
 [AttributeUsage(AttributeTargets.Class)]
-public class TransientAttribute<TMappingStrategy, TRegistrationStrategy>() : RegisterlyAttribute<Transient, TMappingStrategy, TRegistrationStrategy>()
+public class TransientAttribute<TMappingStrategy, TRegistrationStrategy>() : RegisterlyAttribute(new Transient(), new TMappingStrategy(), new TRegistrationStrategy())
     where TMappingStrategy : IMappingStrategy, new()
     where TRegistrationStrategy : IRegistrationStrategy, new();

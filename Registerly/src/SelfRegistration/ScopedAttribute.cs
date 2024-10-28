@@ -1,20 +1,16 @@
-﻿using DeviantCoding.Registerly.Strategies.Mapping;
-using DeviantCoding.Registerly.Strategies;
+﻿using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
-using DeviantCoding.Registerly.Strategies.Registration;
 
 namespace DeviantCoding.Registerly.SelfRegistration;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ScopedAttribute() : ScopedAttribute<AsImplementedInterfaces>();
+public class ScopedAttribute() : RegisterlyAttribute(new Scoped(), null, null);
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ScopedAttribute<TMappingStrategy>() : ScopedAttribute<TMappingStrategy, AddRegistrationStrategy>()
-    where TMappingStrategy : IMappingStrategy, new();
+public class ScopedAttribute<TMappingStrategy>() : RegisterlyAttribute(new Scoped(), new TMappingStrategy(), null)
+    where TMappingStrategy : IMappingStrategy, new ();
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ScopedAttribute<TMappingStrategy, TRegistrationStrategy>() : RegisterlyAttribute<Scoped, TMappingStrategy, TRegistrationStrategy>()
+public class ScopedAttribute<TMappingStrategy, TRegistrationStrategy>() : RegisterlyAttribute(new Scoped(), new TMappingStrategy(), new TRegistrationStrategy())
     where TMappingStrategy : IMappingStrategy, new()
     where TRegistrationStrategy : IRegistrationStrategy, new();
-
-

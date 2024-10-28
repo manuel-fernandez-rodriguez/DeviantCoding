@@ -37,7 +37,6 @@ public static class RegistrationExtensions
         return new RegistrationBuilder(services).FromAssemblies(types.Select(t => t.Assembly));
     }
 
-
     public static IClassSourceResult FromClasses(this IHostApplicationBuilder app, IEnumerable<Type> candidates)
     {
         return app.Services.FromClasses(candidates);

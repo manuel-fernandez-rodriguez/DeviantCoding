@@ -1,5 +1,4 @@
-﻿using DeviantCoding.Registerly.Strategies.Lifetime;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace DeviantCoding.Registerly.Strategies;
 

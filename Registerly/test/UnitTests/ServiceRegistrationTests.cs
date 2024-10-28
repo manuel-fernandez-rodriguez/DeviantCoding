@@ -156,7 +156,7 @@ public class ServiceRegistrationTest
 
     private static void TestRegistration(Action<IServiceCollection> action, Action<IServiceCollection>? verify = null)
     {
-        verify = verify ?? VerifyServices;
+        verify ??= VerifyServices;
 
         var services = new ServiceCollection();
         action(services);

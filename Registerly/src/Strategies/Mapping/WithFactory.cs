@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly.Strategies.Mapping
 {
@@ -16,6 +14,6 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
 
     public static class WithFactory
     {
-        public static WithFactory<TService> Create<TService>(Func<IServiceProvider, TService> factory) where TService : notnull => new WithFactory<TService>(factory);
+        public static WithFactory<TService> Create<TService>(Func<IServiceProvider, TService> factory) where TService : notnull => new(factory);
     }
 }

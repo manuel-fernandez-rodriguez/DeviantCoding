@@ -54,7 +54,7 @@ public static class ReflectionExtensions
             return false;
         }
 
-        var typeSubNamespace = typeNamespace.Substring(0, @namespace.Length);
+        var typeSubNamespace = typeNamespace[..@namespace.Length];
 
         if (typeSubNamespace.Equals(@namespace, StringComparison.Ordinal))
         {
