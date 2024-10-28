@@ -9,6 +9,6 @@ namespace DeviantCoding.Registerly.Strategies
 {
     public interface ILifetimeStrategy
     {
-        ServiceLifetime Lifetime { get; }
+        ServiceLifetime Map(Type implementationType);
     }
 }

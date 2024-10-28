@@ -8,7 +8,7 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
     {
         public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
         {
-            return [new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Lifetime)];
+            return [new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Map(implementationType))];
         }
     }
 }

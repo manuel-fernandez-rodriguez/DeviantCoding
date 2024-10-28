@@ -10,7 +10,7 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
         
         public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
         {
-            return [new ServiceDescriptor(typeof(TService), factory: s => factory(s), lifetimeStrategy.Lifetime)];
+            return [new ServiceDescriptor(typeof(TService), factory: s => factory(s), lifetimeStrategy.Map(implementationType))];
         }
     }
 
@@ -18,12 +18,4 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
     {
         public static WithFactory<TService> Create<TService>(Func<IServiceProvider, TService> factory) where TService : notnull => new WithFactory<TService>(factory);
     }
-
-    //public class WithFactory(Type serviceType, Func<IServiceProvider, object> factory) : IMappingStrategy
-    //{
-    //    public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
-    //    {
-    //        return [new ServiceDescriptor(serviceType, factory: factory, lifetimeStrategy.Lifetime)];
-    //    }
-    //}
 }
