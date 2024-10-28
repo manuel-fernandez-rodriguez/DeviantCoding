@@ -40,7 +40,7 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappin
         return this;
     }
 
-    IQueryable<Type> IClassSourceResult.Types => this;
+    IQueryable<Type> IClassSourceResult.Classes => this;
 
     IClassSourceResult IClassSelector.AndAlso(ClassFilterDelegate predicate)
     {

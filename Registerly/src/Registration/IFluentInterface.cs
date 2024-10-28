@@ -21,13 +21,8 @@ public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILife
 {
     IClassSourceResult Where(ClassFilterDelegate predicate);
     UsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
-    IQueryable<Type> Types { get; }
+    IQueryable<Type> Classes { get; }
 }
-
-//public interface IClassSourceQueryable : IClassSourceResult
-//{
-    
-//}
 
 public interface  UsingResult : IClassSourceResult, IRegisterServices, IClassSelector
 {
