@@ -37,5 +37,5 @@ jobs:
     - name: Publish artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DeviantCoding.Registerly.${{ steps.test.package_version.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        name: DeviantCoding.Registerly.${{ steps.package_version.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
         path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
