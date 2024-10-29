@@ -28,8 +28,13 @@ jobs:
          cd ./Registerly/
          ./build.sh
       shell: bash
+    - name: Get version
+      id: package_version
+      uses: KageKirin/get-csproj-version@v1.0.0
+      with:
+        file: ./Registerly/src/DeviantCoding.Registerly.csproj
     - name: Publish artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DeviantCoding.Registerly.${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        name: DeviantCoding.Registerly.${{ steps.test.package_version.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
         path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
