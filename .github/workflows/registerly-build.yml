@@ -30,12 +30,12 @@ jobs:
          ./build.sh
       shell: bash
     - name: Get version
-      id: package_version
-      uses: KageKirin/get-csproj-version@v1.0.0
+      id: get-version
+      uses: kzrnm/get-net-sdk-project-versions-action@v2
       with:
-        file: ./Registerly/src/DeviantCoding.Registerly.csproj
+        proj-path: ./Registerly/src/DeviantCoding.Registerly.csproj
     - name: Publish artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DeviantCoding.Registerly.${{ steps.package_version.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        name: DeviantCoding.Registerly.${{ steps.get-version.outputs.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
         path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
