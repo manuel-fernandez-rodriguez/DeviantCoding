@@ -34,8 +34,11 @@ jobs:
       uses: kzrnm/get-net-sdk-project-versions-action@v2
       with:
         proj-path: ./Registerly/src/DeviantCoding.Registerly.csproj
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y%m%d')"
     - name: Publish artifact
       uses: actions/upload-artifact@v4
       with:
-        name: DeviantCoding.Registerly.${{ steps.get-version.outputs.version }}_${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        name: DeviantCoding.Registerly.${{ steps.get-version.outputs.version }}_${{ steps.date.outputs.date }}.${{ github.run_number }}.${{ github.run_attempt }}
         path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
