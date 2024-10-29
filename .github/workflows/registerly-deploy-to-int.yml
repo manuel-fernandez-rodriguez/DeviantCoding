@@ -1,0 +1,38 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Release Registerly
+concurrency: integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Build
+      run: |
+         chmod +x ./Registerly/build.sh
+         cd ./Registerly/
+         ./build.sh
+      shell: bash
+    - name: Publish to nuget.org
+      run: dotnet nuget push ./Registerly/src/bin/Release/*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_APIKEY_URL }} 
+    - name: Get version
+      id: get-version
+      uses: kzrnm/get-net-sdk-project-versions-action@v2
+      with:
+        proj-path: ./Registerly/src/DeviantCoding.Registerly.csproj
+    - name: Publish artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DeviantCoding.Registerly.${{ steps.get-version.outputs.version }}
+        path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
