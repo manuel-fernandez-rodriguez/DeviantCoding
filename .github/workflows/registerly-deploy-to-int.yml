@@ -24,7 +24,7 @@ jobs:
          ./build.sh
       shell: bash
     - name: Publish to nuget.org
-      run: dotnet nuget push ./Registerly/src/bin/Release/*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_APIKEY_URL }} 
+      run: dotnet nuget push ./Registerly/src/bin/Release/*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_URL }} 
     - name: Get version
       id: get-version
       uses: kzrnm/get-net-sdk-project-versions-action@v2
