@@ -7,7 +7,7 @@ using System.Reflection;
 namespace DeviantCoding.Registerly.Registration;
 
 
-public interface IClassSelector : IFluentInterface
+public interface IClassSource : IFluentInterface
 {
     IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies);
     IClassSourceResult FromAssemblyOf<T>();
@@ -17,41 +17,33 @@ public interface IClassSelector : IFluentInterface
 }
 
 
-public interface IClassSourceResult : IFluentInterface, IRegisterServices, ILifetimeDefinition, IClassSelector, IMappingStrategyDefinition
+public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegisterServices
 {
     IClassSourceResult Where(ClassFilterDelegate predicate);
-    IUsingResult Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
-    IQueryable<Type> Classes { get; }
 }
 
-public interface  IUsingResult : IClassSourceResult, IRegisterServices, IClassSelector
-{
-    
-}
+public interface  IStrategyDefinitionResultResult : IClassSourceResult, IRegisterServices, IClassSource { }
 
-public interface ILifetimeDefinition : IFluentInterface, IRegisterServices
+public interface ILifetimeDefinition : IFluentInterface
 {
     ILifetimeDefinitionResult WithLifetime(ILifetimeStrategy serviceLifetime);
 }
 
-public interface ILifetimeDefinitionResult : IMappingStrategyDefinition
-{
-}
+public interface ILifetimeDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
 
 public interface IMappingStrategyDefinition : IFluentInterface
 {
     IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy mappingStrategy);
 }
 
-public interface IMappingStrategyDefinitionResult : IRegistrationStrategyDefinition, IRegisterServices, IClassSourceResult, IClassSelector
+public interface IMappingStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
+
+public interface IRegistrationStrategyDefinition : IFluentInterface
 {
+    IRegistrationStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy);
 }
 
-public interface IRegistrationStrategyDefinition : IFluentInterface, IRegisterServices, IClassSourceResult
-{
-    IMappingStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy);
-}
-
+public interface IRegistrationStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
 
 public interface IRegisterServices : IFluentInterface
 {

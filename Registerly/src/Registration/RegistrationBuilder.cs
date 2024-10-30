@@ -1,16 +1,12 @@
 ﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
-using DeviantCoding.Registerly.Strategies.Lifetime;
-using DeviantCoding.Registerly.Strategies.Mapping;
-using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappingStrategyDefinitionResult, ILifetimeDefinitionResult, IUsingResult, IQueryable<Type>
+internal class RegistrationBuilder : IClassSource, 
+    IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResultResult
 {
     private readonly IServiceCollection _serviceCollection;
 
@@ -30,66 +26,25 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappin
 
     public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
 
-    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
-    {
-        var task = Tasks.LastOrDefault();
-        if (task != null)
-        {
-            task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
-        }
-        return this;
-    }
+    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate) => Tasks.Where(predicate);
 
-    IQueryable<Type> IClassSourceResult.Classes => this;
+    IClassSourceResult IClassSource.AndAlso(ClassFilterDelegate predicate) => Tasks.AndAlso(predicate);
 
-    IClassSourceResult IClassSelector.AndAlso(ClassFilterDelegate predicate)
-    {
-        if (Tasks.Count == 0)
-        {
-            throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
-        }
-        
-        return Tasks.AddNew(Tasks.Last().SourceSelector, predicate); ;
-    }
+    ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy serviceLifetime) => Tasks.ApplyStrategy(serviceLifetime);
+    
+    IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy) => Tasks.ApplyStrategy(mappingStrategy);
 
-    IUsingResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
-    {
-        foreach (var task in Tasks)
-        {
-            task.LifetimeStrategy ??= lifetimeStrategy;
-            task.MappingStrategy ??= mappingStrategy;
-            task.RegistrationStrategy ??= registrationStrategy;
-        }
-        return this;
-    }
-
-    ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy serviceLifetime)
-    {
-        IClassSourceResult.Using(serviceLifetime, null!, null!);
-        return this;
-    }
-
-    IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy)
-    {
-        IClassSourceResult.Using(null!, mappingStrategy, null!);
-        return this;
-    }
-
-    IMappingStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
-    {
-        IClassSourceResult.Using(null!, null!, registrationStrategy);
-        return this;
-    }
-
+    IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy) => Tasks.ApplyStrategy(registrationStrategy);
+    
     public IServiceCollection RegisterServices()
     {
         foreach (var task in Tasks)
         {
             foreach (var candidate in task.Classes)
             {
-                var serviceLifetime = task.LifetimeStrategy ?? new Scoped();
-                var mappingStrategy = task.MappingStrategy ?? new AsImplementedInterfaces();
-                var registrationStrategy = task.RegistrationStrategy ?? new AddRegistrationStrategy();
+                var serviceLifetime = task.LifetimeStrategy ?? Default.LifetimeStrategy;
+                var mappingStrategy = task.MappingStrategy ?? Default.MappingStrategy;
+                var registrationStrategy = task.RegistrationStrategy ?? Default.RegistrationStrategy;
 
                 var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
                 registrationStrategy!.RegisterServices(_serviceCollection, descriptors);
@@ -98,16 +53,4 @@ internal class RegistrationBuilder : IClassSelector, IClassSourceResult, IMappin
 
         return _serviceCollection;
     }
-
-    IClassSourceResult IClassSourceResult => this;
-
-    Type IQueryable.ElementType { get; } = typeof(Type);
-
-    Expression IQueryable.Expression => Tasks.GetClasses().Expression;
-
-    IQueryProvider IQueryable.Provider => Tasks.GetClasses().Provider;
-
-    IEnumerator<Type> IEnumerable<Type>.GetEnumerator() => Tasks.GetClasses().GetEnumerator();
-    
-    IEnumerator IEnumerable.GetEnumerator() => Tasks.GetClasses().GetEnumerator();
 }

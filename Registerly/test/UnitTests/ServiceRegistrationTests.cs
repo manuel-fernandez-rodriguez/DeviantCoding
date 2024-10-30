@@ -1,13 +1,8 @@
 ﻿using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
-using DeviantCoding.Registerly.Strategies.Registration;
-using DeviantCoding.Registerly.UnitTests.SampleServices;
-using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
 using System.Runtime.Serialization;
 
 namespace DeviantCoding.Registerly.UnitTests;

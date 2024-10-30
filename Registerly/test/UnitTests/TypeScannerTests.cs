@@ -1,9 +1,6 @@
 ﻿using DeviantCoding.Registerly.SelfRegistration;
-using Microsoft.Extensions.DependencyInjection;
 using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
-using DeviantCoding.Registerly.Strategies.Registration;
-using static DeviantCoding.Registerly.UnitTests.ServiceRegistrationTest;
 
 namespace DeviantCoding.Registerly.UnitTests
 {

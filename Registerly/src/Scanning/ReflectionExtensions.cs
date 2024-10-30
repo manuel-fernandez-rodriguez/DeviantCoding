@@ -1,6 +1,5 @@
 ﻿using DeviantCoding.Registerly.SelfRegistration;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace DeviantCoding.Registerly.Scanning
 {
