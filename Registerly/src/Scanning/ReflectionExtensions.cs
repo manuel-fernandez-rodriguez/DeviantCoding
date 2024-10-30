@@ -1,4 +1,4 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
+﻿using DeviantCoding.Registerly.AttributeRegistration;
 using System.Reflection;
 
 namespace DeviantCoding.Registerly.Scanning

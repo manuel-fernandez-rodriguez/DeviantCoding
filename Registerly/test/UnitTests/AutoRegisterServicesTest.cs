@@ -11,13 +11,13 @@ public class AutoRegisterServicesTest
     [Fact]
     public void AutoRegisterServicesFromDefaultDependencyContext()
     {
-        Assert(_services.AutoRegisterServices());
+        Assert(_services.RegisterByAttributes());
     }
 
     [Fact]
     public void AutoRegisterServicesFromAssemblies()
     {
-        Assert(_services.AutoRegisterServices([GetType().Assembly]));
+        Assert(_services.RegisterByAttributes([GetType().Assembly]));
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class AutoRegisterServicesTest
     {
         var host = Host.CreateEmptyApplicationBuilder(new());
 
-        host.AutoRegisterServices();
+        host.RegisterServicesByAttributes();
 
         var services = host.Services.BuildServiceProvider();
 

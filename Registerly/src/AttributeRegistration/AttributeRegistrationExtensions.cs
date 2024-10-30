@@ -11,36 +11,36 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public static class SelfRegistrationExtensions
+public static class AttributeRegistrationExtensions
 {
-    public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app)
+    public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app)
     {
-        _ = app.Services.AutoRegisterServices();
+        _ = app.Services.RegisterByAttributes();
         return app;
     }
 
-    public static IServiceCollection AutoRegisterServices(this IServiceCollection services)
+    public static IServiceCollection RegisterByAttributes(this IServiceCollection services)
     {
         return services
             .FromDependencyContext()
-            .AutoRegisterServices();
+            .RegisterByAttributes();
     }
 
 
-    public static IHostApplicationBuilder AutoRegisterServices(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
+    public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
-        _ = app.Services.AutoRegisterServices(assemblies);
+        _ = app.Services.RegisterByAttributes(assemblies);
         return app;
     }
 
-    public static IServiceCollection AutoRegisterServices(this IServiceCollection services, IEnumerable<Assembly> assemblies)
+    public static IServiceCollection RegisterByAttributes(this IServiceCollection services, IEnumerable<Assembly> assemblies)
     {
         return services
             .FromAssemblies(assemblies)
-            .AutoRegisterServices();
+            .RegisterByAttributes();
     }
 
-    private static IServiceCollection AutoRegisterServices(this IClassSourceResult classes)
+    private static IServiceCollection RegisterByAttributes(this IClassSourceResult classes)
     {
         return classes
             .Where(t => t.IsMarkedForAutoRegistration())

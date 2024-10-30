@@ -1,6 +1,6 @@
 ﻿using DeviantCoding.Registerly.Strategies;
 
-namespace DeviantCoding.Registerly.SelfRegistration;
+namespace DeviantCoding.Registerly.AttributeRegistration;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class RegisterlyAttribute<TLifetimeStrategy, TMappingStrategy, TRegistrationStrategy>() 

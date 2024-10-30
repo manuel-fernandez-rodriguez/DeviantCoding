@@ -1,4 +1,4 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
+﻿using DeviantCoding.Registerly.AttributeRegistration;
 using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
 

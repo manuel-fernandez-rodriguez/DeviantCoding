@@ -1,4 +1,4 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
+﻿using DeviantCoding.Registerly.AttributeRegistration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

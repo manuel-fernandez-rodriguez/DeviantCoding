@@ -1,4 +1,4 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
+﻿using DeviantCoding.Registerly.AttributeRegistration;
 using DeviantCoding.Registerly.Strategies.Mapping;
 
 namespace DeviantCoding.Registerly.UnitTests.SampleServices;

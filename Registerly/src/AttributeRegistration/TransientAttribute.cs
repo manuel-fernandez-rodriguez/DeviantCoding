@@ -1,7 +1,7 @@
 ﻿using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 
-namespace DeviantCoding.Registerly.SelfRegistration;
+namespace DeviantCoding.Registerly.AttributeRegistration;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class TransientAttribute() : RegisterlyAttribute(new Transient(), null, null);
