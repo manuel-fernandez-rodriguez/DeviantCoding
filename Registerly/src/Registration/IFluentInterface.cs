@@ -13,13 +13,13 @@ public interface IClassSource : IFluentInterface
     IClassSourceResult FromAssemblyOf<T>();
     IClassSourceResult FromClasses(IEnumerable<Type> candidates);
     IClassSourceResult FromDependencyContext();
-    IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
 
 public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegisterServices
 {
     IClassSourceResult Where(ClassFilterDelegate predicate);
+    IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
 public interface  IStrategyDefinitionResultResult : IClassSourceResult, IRegisterServices, IClassSource { }

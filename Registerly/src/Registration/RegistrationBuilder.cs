@@ -1,44 +1,63 @@
 ﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
+using DeviantCoding.Registerly.Strategies.Lifetime;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationBuilder : IClassSource, 
+internal class RegistrationBuilder(IServiceCollection serviceCollection) : List<RegistrationTask>,
+    IClassSource, 
     IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResultResult
 {
-    private readonly IServiceCollection _serviceCollection;
+    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) => AddNew(() => TypeScanner.FromAssemblies(assemblies));
 
-    public RegistrationBuilder(IServiceCollection serviceCollection)
+    public IClassSourceResult FromAssemblyOf<T>() => AddNew(() => TypeScanner.FromAssemblies([typeof(T).Assembly]));
+
+    public IClassSourceResult FromClasses(IEnumerable<Type> candidates) => AddNew(() => TypeScanner.FromClasses(candidates));
+
+    public IClassSourceResult FromDependencyContext() => AddNew(() => TypeScanner.FromDependencyContext());
+
+    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
     {
-        _serviceCollection = serviceCollection;
-        Tasks = new(this);
+        var task = this.LastOrDefault();
+        if (task != null)
+        {
+            task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
+        }
+        return this;
     }
 
-    private RegistrationTasks Tasks { get; }
+    IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate)
+    {
+        if (Count == 0)
+        {
+            throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
+        }
+        return AddNew(this.Last().SourceSelector, predicate);
+    }
+
+    ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy lifetimeStrategy)
+    {
+        ForEach(task => task.LifetimeStrategy ??= lifetimeStrategy);
+        return this;
+    }
     
-    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) => Tasks.AddNew(() => TypeScanner.FromAssemblies(assemblies));
+    IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy)
+    {
+        ForEach(task => task.MappingStrategy ??= mappingStrategy);
+        return this;
+    }
 
-    public IClassSourceResult FromAssemblyOf<T>() => Tasks.AddNew(() => TypeScanner.FromAssemblies([typeof(T).Assembly]));
-
-    public IClassSourceResult FromClasses(IEnumerable<Type> candidates) => Tasks.AddNew(() => TypeScanner.FromClasses(candidates));
-
-    public IClassSourceResult FromDependencyContext() => Tasks.AddNew(() => TypeScanner.FromDependencyContext());
-
-    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate) => Tasks.Where(predicate);
-
-    IClassSourceResult IClassSource.AndAlso(ClassFilterDelegate predicate) => Tasks.AndAlso(predicate);
-
-    ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy serviceLifetime) => Tasks.ApplyStrategy(serviceLifetime);
-    
-    IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy) => Tasks.ApplyStrategy(mappingStrategy);
-
-    IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy) => Tasks.ApplyStrategy(registrationStrategy);
+    IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
+    {
+        ForEach(task => task.RegistrationStrategy ??= registrationStrategy);
+        return this;
+    }
     
     public IServiceCollection RegisterServices()
     {
-        foreach (var task in Tasks)
+        foreach (var task in this)
         {
             foreach (var candidate in task.Classes)
             {
@@ -47,10 +66,22 @@ internal class RegistrationBuilder : IClassSource,
                 var registrationStrategy = task.RegistrationStrategy ?? Default.RegistrationStrategy;
 
                 var descriptors = mappingStrategy!.Map(candidate, serviceLifetime);
-                registrationStrategy!.RegisterServices(_serviceCollection, descriptors);
+                registrationStrategy!.RegisterServices(serviceCollection, descriptors);
             }
         }
 
-        return _serviceCollection;
+        return serviceCollection;
+    }
+
+    private RegistrationBuilder AddNew(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
+    {
+        serviceSelector ??= _ => true;
+
+        Add(new()
+        {
+            SourceSelector = sourceSelector,
+            Classes = sourceSelector().Where(t => serviceSelector(t))
+        });
+        return this;
     }
 }
