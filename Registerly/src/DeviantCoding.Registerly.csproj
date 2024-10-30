@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget package data">
-    <IsDeviantCodingPackage>true</IsDeviantCodingPackage>
+    <IsDeviantCodingNugetPackage>true</IsDeviantCodingNugetPackage>
     <Description>Dependency injection made easy</Description>
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
     <Version>1.0.0-alpha</Version>
     <PackageReleaseNotes>Alpha version for internal testing.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
+    <PackageLicenseFile>../LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
