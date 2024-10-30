@@ -29,7 +29,7 @@
 
   <ItemGroup
     Label="Default properties for DeviantCoding Nuget Packages"
-    Condition=" $(IsDeviantCodingPackage) == true ">
+    Condition=" $(IsDeviantCodingNugetPackage) == true ">
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
     <InternalsVisibleTo Include="$(AssemblyName).IntegrationTests" />
     <InternalsVisibleTo Include="$(AssemblyName).UnitTests" />
