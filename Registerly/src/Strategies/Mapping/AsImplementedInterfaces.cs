@@ -4,10 +4,16 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
 {
     public class AsImplementedInterfaces : IMappingStrategy
     {
-        public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
+        public IEnumerable<ServiceDescriptor> Map(IEnumerable<Type> implementationTypes, ILifetimeStrategy lifetimeStrategy)
         {
-            var services = implementationType.GetInterfaces();
-            return services.Select(service => new ServiceDescriptor(service, implementationType, lifetimeStrategy.Map(implementationType)));
+            foreach (var implementationType in implementationTypes)
+            {
+                var services = implementationType.GetInterfaces();
+                foreach (var service in services)
+                {
+                    yield return new ServiceDescriptor(service, implementationType, lifetimeStrategy.Map(implementationType));
+                }
+            }
         }
     }
 }

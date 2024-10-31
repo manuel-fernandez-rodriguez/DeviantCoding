@@ -4,9 +4,12 @@ namespace DeviantCoding.Registerly.Strategies.Mapping
 {
     public class AsSelf : IMappingStrategy
     {
-        public IEnumerable<ServiceDescriptor> Map(Type implementationType, ILifetimeStrategy lifetimeStrategy)
+        public IEnumerable<ServiceDescriptor> Map(IEnumerable<Type> implementationTypes, ILifetimeStrategy lifetimeStrategy)
         {
-            return [new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Map(implementationType))];
+            foreach (var implementationType in implementationTypes)
+            {
+                yield return new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Map(implementationType));
+            }
         }
     }
 }

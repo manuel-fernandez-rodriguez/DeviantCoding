@@ -22,12 +22,9 @@ public static class RegistrationExtensions
     {
         foreach (var task in source)
         {
-            foreach (var candidate in task.Classes)
-            {
-                var (lifetime, mapping, registration) = task.GetStrategies();
-                var descriptors = mapping.Map(candidate, lifetime);
-                registration.RegisterServices(services, descriptors);
-            }
+            var (lifetime, mapping, registration) = task.GetStrategies();
+            var descriptors = mapping.Map(task.Classes, lifetime);
+            registration.RegisterServices(services, descriptors);
         }
 
         return services;
