@@ -1,6 +1,5 @@
 ﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
-using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -10,45 +9,40 @@ namespace DeviantCoding.Registerly.Registration;
 public interface IClassSource : IFluentInterface
 {
     IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies);
-    IClassSourceResult FromAssemblyOf<T>();
-    IClassSourceResult FromClasses(IEnumerable<Type> candidates);
+    IClassSourceResult From(IEnumerable<Type> candidates);
     IClassSourceResult FromDependencyContext();
 }
 
-
-public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegisterServices
+public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegistrationTaskSource
 {
     IClassSourceResult Where(ClassFilterDelegate predicate);
     IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
-public interface  IStrategyDefinitionResultResult : IClassSourceResult, IRegisterServices, IClassSource { }
+public interface  IStrategyDefinitionResult : IClassSourceResult, IRegistrationTaskSource, IClassSource { }
 
 public interface ILifetimeDefinition : IFluentInterface
 {
     ILifetimeDefinitionResult WithLifetime(ILifetimeStrategy serviceLifetime);
 }
 
-public interface ILifetimeDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
+public interface ILifetimeDefinitionResult : IFluentInterface, IStrategyDefinitionResult { }
 
 public interface IMappingStrategyDefinition : IFluentInterface
 {
     IMappingStrategyDefinitionResult WithMappingStrategy(IMappingStrategy mappingStrategy);
 }
 
-public interface IMappingStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
+public interface IMappingStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResult { }
 
 public interface IRegistrationStrategyDefinition : IFluentInterface
 {
     IRegistrationStrategyDefinitionResult WithRegistrationStrategy(IRegistrationStrategy registrationStrategy);
 }
 
-public interface IRegistrationStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResultResult { }
+public interface IRegistrationStrategyDefinitionResult : IFluentInterface, IStrategyDefinitionResult { }
 
-public interface IRegisterServices : IFluentInterface
-{
-    IServiceCollection RegisterServices();
-}
+public interface IRegistrationTaskSource : IFluentInterface, IEnumerable<RegistrationTask> { }
 
 
 [EditorBrowsable(EditorBrowsableState.Never)]

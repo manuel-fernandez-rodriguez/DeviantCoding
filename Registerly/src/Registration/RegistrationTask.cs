@@ -3,11 +3,18 @@ using DeviantCoding.Registerly.Strategies;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationTask
+public class RegistrationTask 
 {
     public required SourceSelectorDelegate SourceSelector { get; init; }
-    public ILifetimeStrategy? LifetimeStrategy { get; set; }
-    public IMappingStrategy? MappingStrategy { get; set; }
-    public IRegistrationStrategy? RegistrationStrategy { get; set; }    
-    public IQueryable<Type> Classes { get; set; } = Enumerable.Empty<Type>().AsQueryable();
+    public ILifetimeStrategy? LifetimeStrategy { get; internal set; }
+    public IMappingStrategy? MappingStrategy { get; internal set; }
+    public IRegistrationStrategy? RegistrationStrategy { get; internal set; }
+    public IQueryable<Type> Classes { get; internal set; } = Enumerable.Empty<Type>().AsQueryable();
+
+    internal (ILifetimeStrategy lifetime, IMappingStrategy mapping, IRegistrationStrategy registration) GetStrategies()
+    {
+        return (LifetimeStrategy ?? Default.LifetimeStrategy,
+                MappingStrategy ?? Default.MappingStrategy,
+                RegistrationStrategy ?? Default.RegistrationStrategy);
+    }
 }

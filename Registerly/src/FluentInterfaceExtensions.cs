@@ -4,11 +4,18 @@ using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace DeviantCoding.Registerly;
 
 public static class FluentInterfaceExtensions
 {
+    public static IClassSourceResult FromAssembly(this IClassSource source, Assembly assembly)
+        => source.FromAssemblies([assembly]);
+
+    public static IClassSourceResult FromAssemblyOf<T>(this IClassSource source)
+        => source.FromAssembly(typeof(T).Assembly);
+
     public static IMappingStrategyDefinitionResult AsImplementedInterfaces(this IMappingStrategyDefinition target)
         => target.WithMappingStrategy(new AsImplementedInterfaces());
 
@@ -42,27 +49,27 @@ public static class FluentInterfaceExtensions
             _ => throw new NotImplementedException()
         };
 
-    public static IStrategyDefinitionResultResult Using<TLifetime>(this IClassSourceResult target)
+    public static IStrategyDefinitionResult Using<TLifetime>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
         => target.Using<TLifetime, AsImplementedInterfaces>();
 
     public static ILifetimeDefinitionResult WithLifetime(this ILifetimeDefinition target, ServiceLifetime serviceLifetime)
         => target.WithLifetime(serviceLifetime.ToStrategy());
 
-    public static IStrategyDefinitionResultResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
+    public static IStrategyDefinitionResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
         where TMappingStrategy : IMappingStrategy, new()
         => target.Using<TLifetime, TMappingStrategy, AddRegistrationStrategy>();
 
-    public static IStrategyDefinitionResultResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>(this IClassSourceResult target)
+    public static IStrategyDefinitionResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
         where TMappingStrategy : IMappingStrategy, new()
         where TRegistrationStrategy : IRegistrationStrategy, new()
         => target.WithLifetime(new TLifetime()).WithMappingStrategy(new TMappingStrategy()).WithRegistrationStrategy(new TRegistrationStrategy());
 
-    public static IStrategyDefinitionResultResult Using(this IClassSourceResult target, ServiceLifetime lifetime)
+    public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime)
         => target.WithLifetime(lifetime.ToStrategy());
 
-    public static IStrategyDefinitionResultResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
+    public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
         => target.WithLifetime(lifetime.ToStrategy()).WithMappingStrategy(mappingStrategy);
 }

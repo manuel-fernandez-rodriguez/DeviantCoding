@@ -13,32 +13,32 @@ internal static class TypeScanner
         return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter ?? new ClassFilterDelegate(_ => true));
     }
 
-    public static IQueryable<Type> FromDependencyContext(DependencyContext context, Func<Assembly, bool> assemblyFilter, ClassFilterDelegate typeFilter)
+    public static IQueryable<Type> FromDependencyContext(DependencyContext context, Func<AssemblyName, bool> assemblyFilter, ClassFilterDelegate typeFilter)
     {
         var assemblyNames = context.RuntimeLibraries
             .SelectMany(library => library.GetDefaultAssemblyNames(context))
             .ToHashSet();
 
         return new AssemblyLoader()
-            .FromAssemblyNames(assemblyNames, typeFilter)
+            .FromAssemblyNames(assemblyNames.Where(assemblyFilter), typeFilter)
             .AsQueryable();
     }
 
-    public static IQueryable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
+    public static IQueryable<Type> From(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
     {
         return new AssemblyLoader()
             .FromAssemblyNames(assemblyNames, typeFilter)
             .AsQueryable();
     }
 
-    public static IQueryable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
+    public static IQueryable<Type> From(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
         return new AssemblyLoader()
             .FromAssemblies(assemblies, typeFilter)
             .AsQueryable();
     }
 
-    public static IQueryable<Type> FromClasses(IEnumerable<Type> classes)
+    public static IQueryable<Type> From(IEnumerable<Type> classes)
     {
         return classes
             .Where(t => t.IsRegistrable())

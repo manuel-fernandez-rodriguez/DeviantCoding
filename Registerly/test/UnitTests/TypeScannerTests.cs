@@ -13,7 +13,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Singleton<AsSelf>] public class TypeScannerClass4 { }
 
 
-        private static Type[] DecoratedTypes = 
+        private readonly static Type[] _decoratedTypes = 
             [
             typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
             typeof(TypeScannerClass4)
@@ -26,23 +26,23 @@ namespace DeviantCoding.Registerly.UnitTests
                 .FromDependencyContext()
                 .Where( t => t.Name.StartsWith("TypeScannerClass"));
 
-            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+            types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
         }
 
         [Fact]
         public void Should_succesfully_execute_FromAssemblyNames()
         {
             var types = TypeScanner
-                .FromAssemblyNames([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
+                .From([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
                 .Where(t => t.Name.StartsWith("TypeScannerClass"));
 
-            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+            types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
         }
 
         [Fact]
         public void Should_resolve_RegisterlyAttribute()
         {
-            foreach (var type in DecoratedTypes)
+            foreach (var type in _decoratedTypes)
             {
                 type.IsMarkedForAutoRegistration()
                     .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
@@ -55,7 +55,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void Should_apply_AssignableTo()
         {
-            TypeScanner.FromClasses(DecoratedTypes)
+            TypeScanner.From(_decoratedTypes)
                 .Where(t => t.AssignableTo<ITypeScannerInterface1>())
                 .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
 

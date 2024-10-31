@@ -2,23 +2,16 @@
 
 namespace DeviantCoding.Registerly.Scanning;
 
-internal class AssemblyLoader
+internal class AssemblyLoader(ClassFilterDelegate defaultFilter)
 {
-    private static readonly ClassFilterDelegate DefaultFilter = t => t.IsRegistrable();
-
-    private readonly ClassFilterDelegate _defaultFilter = DefaultFilter;
-
-    public AssemblyLoader(ClassFilterDelegate defaultFilter)
-    {
-        _defaultFilter = defaultFilter;
-    }
+    public static readonly ClassFilterDelegate DefaultFilter = t => t.IsRegistrable();
 
     public AssemblyLoader() : this(DefaultFilter)
     {
 
     }
 
-    public IEnumerable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
+    public IQueryable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
     {
         var assemblies = LoadAssemblies(assemblyNames);
         return FromAssemblies(assemblies, typeFilter);
@@ -27,11 +20,11 @@ internal class AssemblyLoader
 
     public IQueryable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
-        typeFilter ??= _defaultFilter;
+        typeFilter ??= defaultFilter;
         return assemblies
             .AsQueryable()
             .SelectMany(asm => asm.GetLoadableTypes())
-            .Where(t => _defaultFilter(t) && typeFilter(t));
+            .Where(t => defaultFilter(t) && typeFilter(t));
     }
 
     private static HashSet<Assembly> LoadAssemblies(IEnumerable<AssemblyName> assemblyNames)
