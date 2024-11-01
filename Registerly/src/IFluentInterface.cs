@@ -20,6 +20,7 @@ public interface IClassSource : IFluentInterface
 public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegistrationTaskSource
 {
     IClassSourceResult AndAlso(ClassFilterDelegate predicate);
+    IStrategyDefinitionResult Using(ILifetimeStrategy lifetime, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy);
 }
 
 public interface IStrategyDefinitionResult : IClassSourceResult, IRegistrationTaskSource, IClassSource

@@ -43,8 +43,9 @@ public class ServiceRegistrationTest
     }
 
     [Fact]
-    public void Verbose_compact_and_slim_styles_should_be_equivalent()
+    public void Equivalent_registration_syntax_should_produce_same_results()
     {
+        // Verbose syntax
         _services
             .Register(classes => classes
                 .FromAssemblyOf<Implementation1>()
@@ -65,6 +66,7 @@ public class ServiceRegistrationTest
         VerifyServices(_services);
         _services.Clear();
 
+        // Compact with all strategy classes explicitly specified
         _services
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
@@ -79,6 +81,7 @@ public class ServiceRegistrationTest
         VerifyServices(_services);
         _services.Clear();
 
+        // Compact, omitting default strategy classes
         _services
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
@@ -89,6 +92,43 @@ public class ServiceRegistrationTest
                 .AndAlso(t => t.Exactly<Implementation5>())
                     .Using<Transient, AsSelf>()
             );
+
+        VerifyServices(_services);
+        _services.Clear();
+
+        // Use default source.
+        // Note this syntax will internally use DependencyContext.Default,
+        // and, thus, will process more assemblies. Use with common sense.
+        _services
+            .Register(classes => classes
+                .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
+                    .Using<Scoped, AsSelf>()
+                .AndAlso(t => t.Exactly<Implementation4>())
+                    .Using<Singleton>()
+                .AndAlso(t => t.Exactly<Implementation5>())
+                    .Using<Transient, AsSelf>()
+            );
+
+        VerifyServices(_services);
+        _services.Clear();
+
+        // Use default source, with non-generic Using overloads.
+        // This syntax allows extending any of the strategies with
+        // classes that do not have a default constructor.
+        // Note this syntax will use DependencyContext.Default,
+        // and, thus, will process more assemblies
+        _services
+            .Register(classes => classes
+                .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
+                    .Using(new Scoped(), new AsSelf())
+                .AndAlso(t => t.Exactly<Implementation4>())
+                    .Using(new Singleton())
+                .AndAlso(t => t.Exactly<Implementation5>())
+                    .Using(new Transient(), new AsSelf())
+            );
+
+        VerifyServices(_services);
+        _services.Clear();
     }
 
     [Fact]

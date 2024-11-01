@@ -48,13 +48,12 @@ public static class FluentInterfaceExtensions
             ServiceLifetime.Transient => new Transient(),
             _ => throw new NotImplementedException()
         };
+    public static ILifetimeDefinitionResult WithLifetime(this ILifetimeDefinition target, ServiceLifetime serviceLifetime)
+        => target.WithLifetime(serviceLifetime.ToStrategy());
 
     public static IStrategyDefinitionResult Using<TLifetime>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
         => target.Using<TLifetime, AsImplementedInterfaces>();
-
-    public static ILifetimeDefinitionResult WithLifetime(this ILifetimeDefinition target, ServiceLifetime serviceLifetime)
-        => target.WithLifetime(serviceLifetime.ToStrategy());
 
     public static IStrategyDefinitionResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
@@ -65,13 +64,25 @@ public static class FluentInterfaceExtensions
         where TLifetime : ILifetimeStrategy, new()
         where TMappingStrategy : IMappingStrategy, new()
         where TRegistrationStrategy : IRegistrationStrategy, new()
-        => target.WithLifetime(new TLifetime()).WithMappingStrategy(new TMappingStrategy()).WithRegistrationStrategy(new TRegistrationStrategy());
+        => target.Using(new TLifetime(), new TMappingStrategy(), new TRegistrationStrategy());
 
     public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime)
-        => target.WithLifetime(lifetime.ToStrategy());
+        => target.Using(lifetime.ToStrategy());
 
     public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
-        => target.WithLifetime(lifetime.ToStrategy()).WithMappingStrategy(mappingStrategy);
+        => target
+            .Using(lifetime.ToStrategy(), mappingStrategy);
+
+    public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
+        => target
+            .Using(lifetime.ToStrategy(), mappingStrategy, registrationStrategy);
+
+    public static IStrategyDefinitionResult Using(this IClassSourceResult target, ILifetimeStrategy lifetime)
+        => target.Using(lifetime, Default.MappingStrategy, Default.RegistrationStrategy);
+
+    public static IStrategyDefinitionResult Using(this IClassSourceResult target, ILifetimeStrategy lifetime, IMappingStrategy mappingStrategy)
+        => target.Using(lifetime, mappingStrategy, Default.RegistrationStrategy);
+
 
     public static IStrategyDefinitionResult UsingAttributes(this IClassSource target)
         => target.Where(t => t.IsMarkedForAutoRegistration())
