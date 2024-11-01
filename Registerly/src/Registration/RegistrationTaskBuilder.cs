@@ -1,5 +1,4 @@
-﻿using DeviantCoding.Registerly;
-using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using System.Collections;
 using System.Reflection;
@@ -25,7 +24,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
     {
         if (_tasks.Count == 0)
         {
-            return FromDependencyContext().Where(predicate);
+            return ((IClassSource) this).FromDependencyContext().Where(predicate);
         }
 
         var task = GetLastElement();
