@@ -43,6 +43,14 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
     IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
         => ForEach(task => task.RegistrationStrategy ??= registrationStrategy);
 
+    IStrategyDefinitionResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
+        => ForEach(task =>
+            {
+                task.LifetimeStrategy ??= lifetimeStrategy;
+                task.MappingStrategy ??= mappingStrategy;
+                task.RegistrationStrategy ??= registrationStrategy;
+            });
+
     IEnumerator<RegistrationTask> IEnumerable<RegistrationTask>.GetEnumerator()
         => _tasks.GetEnumerator();
 
