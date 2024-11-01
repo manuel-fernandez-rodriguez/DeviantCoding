@@ -8,10 +8,8 @@ public delegate bool ClassFilterDelegate(Type type);
 
 internal static class TypeScanner
 {
-    public static IQueryable<Type> FromDependencyContext(ClassFilterDelegate? typeFilter = null)
-    {
-        return FromDependencyContext(DependencyContext.Default, _ => true, typeFilter ?? new ClassFilterDelegate(_ => true));
-    }
+    public static IQueryable<Type> FromDependencyContext(ClassFilterDelegate? typeFilter = null) 
+        => FromDependencyContext(DependencyContext.Default ?? throw new InvalidOperationException("No default dependency context found"), _ => true, typeFilter ?? new ClassFilterDelegate(_ => true));
 
     public static IQueryable<Type> FromDependencyContext(DependencyContext context, Func<AssemblyName, bool> assemblyFilter, ClassFilterDelegate typeFilter)
     {
