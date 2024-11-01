@@ -16,11 +16,16 @@ public static class RegistrationExtensions
     {
         foreach (var task in source)
         {
-            var (lifetime, mapping, registration) = task.GetStrategies();
-            var descriptors = mapping.Map(task.Classes, lifetime);
-            registration.RegisterServices(services, descriptors);
+            services.RegisterTask(task);
         }
 
         return services;
+    }
+
+    private static void RegisterTask(this IServiceCollection services, RegistrationTask task)
+    {
+        var (lifetime, mapping, registration) = task.GetStrategies();
+        var descriptors = mapping.Map(task.Classes, lifetime);
+        registration.RegisterServices(services, descriptors);
     }
 }

@@ -11,6 +11,11 @@ public class RegistrationTask
     public IRegistrationStrategy? RegistrationStrategy { get; internal set; }
     public IQueryable<Type> Classes { get; internal set; } = Enumerable.Empty<Type>().AsQueryable();
 
+    internal void ApplyPredicate(ClassFilterDelegate predicate)
+    {
+        Classes = Classes.Where(t => predicate(t)).AsQueryable();
+    }
+
     internal (ILifetimeStrategy lifetime, IMappingStrategy mapping, IRegistrationStrategy registration) GetStrategies()
     {
         return (LifetimeStrategy ?? Default.LifetimeStrategy,

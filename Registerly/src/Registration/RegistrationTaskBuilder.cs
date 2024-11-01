@@ -24,16 +24,15 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
     {
         if (_tasks.Count == 0)
         {
-            return ((IClassSource) this).FromDependencyContext().Where(predicate);
+            return FromDefaultSource(predicate);
         }
 
-        var task = GetLastElement();
-        task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
+        GetCurrentTask().ApplyPredicate(t => predicate(t));
         return this;
     }
 
     IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate) 
-        => AddNew(GetLastElement().SourceSelector, predicate);
+        => AddNew(GetCurrentTask().SourceSelector, predicate);
 
     ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy lifetimeStrategy)
         => ForEach(task => task.LifetimeStrategy ??= lifetimeStrategy);
@@ -71,7 +70,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         return this;
     }
 
-    private RegistrationTask GetLastElement()
+    private RegistrationTask GetCurrentTask()
     {
         if (_tasks.Count == 0)
         {
@@ -80,5 +79,6 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         return _tasks.Last();
     }
 
-    
+    private IClassSourceResult FromDefaultSource(ClassFilterDelegate predicate) 
+        => ((IClassSource)this).FromDependencyContext().Where(predicate);
 }

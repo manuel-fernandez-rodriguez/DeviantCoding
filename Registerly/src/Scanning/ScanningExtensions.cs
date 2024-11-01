@@ -27,28 +27,11 @@ namespace DeviantCoding.Registerly.Scanning
 
         internal static RegisterlyAttribute? GetAutoRegistrationAttribute(this Type type)
         {
-            if (!type.IsRegistrable())
-            {
-                return null;
-            }
-
-            var allCustomAttributes = type
-                    .GetCustomAttributes(true);
-
-            foreach (var attribute in allCustomAttributes)
-            {
-                var attributeType = attribute.GetType();
-                var t = attributeType;
-                while (t != null)
-                {
-                    if (t == typeof(RegisterlyAttribute))
-                    {
-                        return (RegisterlyAttribute)attribute;
-                    }
-                    t = t.BaseType;
-                }
-            }
-            return null;
+            return type.IsRegistrable()
+                ? type.GetCustomAttributes(true)
+                      .OfType<RegisterlyAttribute>()
+                      .FirstOrDefault()
+                : null;
         }
     }
 }

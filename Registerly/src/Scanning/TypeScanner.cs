@@ -17,31 +17,21 @@ internal static class TypeScanner
     {
         var assemblyNames = context.RuntimeLibraries
             .SelectMany(library => library.GetDefaultAssemblyNames(context))
+            .Where(assemblyFilter)
             .ToHashSet();
 
         return new AssemblyLoader()
-            .FromAssemblyNames(assemblyNames.Where(assemblyFilter), typeFilter)
-            .AsQueryable();
+            .FromAssemblyNames(assemblyNames, typeFilter);
     }
 
-    public static IQueryable<Type> From(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
-    {
-        return new AssemblyLoader()
-            .FromAssemblyNames(assemblyNames, typeFilter)
-            .AsQueryable();
-    }
+    public static IQueryable<Type> From(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter) 
+        => new AssemblyLoader().FromAssemblyNames(assemblyNames, typeFilter);
 
-    public static IQueryable<Type> From(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
-    {
-        return new AssemblyLoader()
-            .FromAssemblies(assemblies, typeFilter)
-            .AsQueryable();
-    }
+    public static IQueryable<Type> From(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null) 
+        => new AssemblyLoader().FromAssemblies(assemblies, typeFilter);
 
-    public static IQueryable<Type> From(IEnumerable<Type> classes)
-    {
-        return classes
+    public static IQueryable<Type> From(IEnumerable<Type> classes) 
+        => classes
             .Where(t => t.IsRegistrable())
             .AsQueryable();
-    }
 }

@@ -7,28 +7,13 @@ public static class ReflectionExtensions
 {
     public static bool IsNonAbstractClass(this Type type, bool publicOnly)
     {
-        if (type.IsSpecialName)
-        {
-            return false;
-        }
-
-        if (type.IsClass && !type.IsAbstract)
-        {
-            if (type.HasAttribute<CompilerGeneratedAttribute>())
-            {
-                return false;
-            }
-
-            if (publicOnly)
-            {
-                return type.IsPublic || type.IsNestedPublic;
-            }
-
-            return true;
-        }
-
-        return false;
+        return !type.IsSpecialName &&
+               type.IsClass &&
+               !type.IsAbstract &&
+               !type.HasAttribute<CompilerGeneratedAttribute>() &&
+               (!publicOnly || type.IsPublic || type.IsNestedPublic);
     }
+    
 
     public static IEnumerable<Type> GetBaseTypes(this Type type)
     {
@@ -48,27 +33,8 @@ public static class ReflectionExtensions
     public static bool IsInNamespace(this Type type, string @namespace)
     {
         var typeNamespace = type.Namespace ?? string.Empty;
-
-        if (@namespace.Length > typeNamespace.Length)
-        {
-            return false;
-        }
-
-        var typeSubNamespace = typeNamespace[..@namespace.Length];
-
-        if (typeSubNamespace.Equals(@namespace, StringComparison.Ordinal))
-        {
-            if (typeNamespace.Length == @namespace.Length)
-            {
-                //exactly the same
-                return true;
-            }
-
-            //is a subnamespace?
-            return typeNamespace[@namespace.Length] == '.';
-        }
-
-        return false;
+        return typeNamespace.StartsWith(@namespace, StringComparison.Ordinal) &&
+               (typeNamespace.Length == @namespace.Length || typeNamespace[@namespace.Length] == '.');
     }
 
     public static bool IsInExactNamespace(this Type type, string @namespace)
@@ -98,34 +64,11 @@ public static class ReflectionExtensions
 
     private static bool IsAssignableToGenericTypeDefinition(this Type type, Type genericType)
     {
-        foreach (var interfaceType in type.GetInterfaces())
-        {
-            if (interfaceType.IsGenericType)
-            {
-                var genericTypeDefinition = interfaceType.GetGenericTypeDefinition();
-                if (genericTypeDefinition == genericType)
-                {
-                    return true;
-                }
-            }
-        }
+        bool IsGenericTypeDefinitionMatch(Type t) => t.IsGenericType && t.GetGenericTypeDefinition() == genericType;
 
-        if (type.IsGenericType)
-        {
-            var genericTypeDefinition = type.GetGenericTypeDefinition();
-            if (genericTypeDefinition == genericType)
-            {
-                return true;
-            }
-        }
-
-        var baseType = type.BaseType;
-        if (baseType is null)
-        {
-            return false;
-        }
-
-        return baseType.IsAssignableToGenericTypeDefinition(genericType);
+        return type.GetInterfaces().Any(IsGenericTypeDefinitionMatch) ||
+               (type.IsGenericType && IsGenericTypeDefinitionMatch(type)) ||
+               (type.BaseType != null && type.BaseType.IsAssignableToGenericTypeDefinition(genericType));
     }
 
     public static bool IsOpenGeneric(this Type type)
