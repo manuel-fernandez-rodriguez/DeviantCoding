@@ -38,6 +38,10 @@ internal class AssemblyLoader(ClassFilterDelegate defaultFilter)
                 // Try to load the referenced assembly...
                 assemblies.Add(Assembly.Load(assemblyName));
             }
+            catch(FileNotFoundException)
+            {
+                throw;
+            }
             catch
             {
                 // Failed to load assembly. Skip it.
