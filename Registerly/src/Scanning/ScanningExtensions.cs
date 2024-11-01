@@ -1,37 +1,36 @@
 ﻿using DeviantCoding.Registerly.AttributeRegistration;
 using System.Reflection;
 
-namespace DeviantCoding.Registerly.Scanning
+namespace DeviantCoding.Registerly.Scanning;
+
+internal static class ScanningExtensions
 {
-    internal static class ScanningExtensions
+    internal static IReadOnlyCollection<Type> GetLoadableTypes(this Assembly assembly)
     {
-        internal static IReadOnlyCollection<Type> GetLoadableTypes(this Assembly assembly)
+        try
         {
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                return ex.Types.Where(t => t is not null).ToArray()!;
-            }
-            catch
-            {
-                return [];
-            }
+            return assembly.GetTypes();
         }
-
-        internal static bool IsRegistrable(this Type type) => type.IsNonAbstractClass(publicOnly: false);
-
-        internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterlyAttribute), true);
-
-        internal static RegisterlyAttribute? GetAutoRegistrationAttribute(this Type type)
+        catch (ReflectionTypeLoadException ex)
         {
-            return type.IsRegistrable()
-                ? type.GetCustomAttributes(true)
-                      .OfType<RegisterlyAttribute>()
-                      .FirstOrDefault()
-                : null;
+            return ex.Types.Where(t => t is not null).ToArray()!;
         }
+        catch
+        {
+            return [];
+        }
+    }
+
+    internal static bool IsRegistrable(this Type type) => type.IsNonAbstractClass(publicOnly: false);
+
+    internal static bool IsMarkedForAutoRegistration(this Type type) => type.IsDefined(typeof(RegisterlyAttribute), true);
+
+    internal static RegisterlyAttribute? GetFirstRegisterlyAttributeOrDefault(this Type type)
+    {
+        return type.IsRegistrable()
+            ? type.GetCustomAttributes(true)
+                  .OfType<RegisterlyAttribute>()
+                  .FirstOrDefault()
+            : null;
     }
 }
