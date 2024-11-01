@@ -10,24 +10,16 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
     IClassSource, 
     IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResult
 {
-
     private readonly List<RegistrationTask> _tasks = [];
 
-    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) 
+    IClassSourceResult IClassSource.FromAssemblies(IEnumerable<Assembly> assemblies) 
         => AddNew(() => TypeScanner.From(assemblies));
 
-    public IClassSourceResult From(IEnumerable<Type> candidates) 
+    IClassSourceResult IClassSource.From(IEnumerable<Type> candidates) 
         => AddNew(() => TypeScanner.From(candidates));
 
-    public IClassSourceResult FromDependencyContext() 
+    IClassSourceResult IClassSource.FromDependencyContext() 
         => AddNew(() => TypeScanner.FromDependencyContext());
-
-    //IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
-    //{
-    //    var task = GetLastElement();
-    //    task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
-    //    return this;
-    //}
 
     IClassSourceResult IClassSource.Where(ClassFilterDelegate predicate)
     {
