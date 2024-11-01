@@ -90,7 +90,7 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_apply_default_lifetime()
     {
-        _services.Register(ClassList.ToSource());
+        _services.Register(ClassList.AsRegistrable());
 
         _services
             .Where(s => s.ServiceType.IsExactly<IService1>() || s.ServiceType.IsExactly<IService2>())
@@ -101,7 +101,7 @@ public class ServiceRegistrationTest
     public void Should_chain_sources()
     {
         TestRegistration(services => services
-            .Register(ClassList.ToSource()
+            .Register(ClassList.AsRegistrable()
                 .FromAssemblyOf<Exception>()
                 .Where(t => t.IsExactly<Exception>())),
             services => 
@@ -116,7 +116,7 @@ public class ServiceRegistrationTest
     public void Should_register_as_designated_type()
     {
         var services = _services
-            .Register(ClassList.ToSource()
+            .Register(ClassList.AsRegistrable()
                 .Where(t => t.Name == nameof(Implementation1) || new[] { typeof(Implementation2) }.Contains(t)) 
                 .As<IService1>());
 
@@ -129,7 +129,7 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_register_as_factory()
     {
-        var services = _services.Register(ClassList.ToSource()
+        var services = _services.Register(ClassList.AsRegistrable()
                 .Where(t => t.IsExactly<Implementation1>())
                     .WithFactory<IService1>(s => new Implementation1 { Value = "potato1" })
                 .AndAlso(t => t.IsExactly<Implementation1>())

@@ -13,7 +13,7 @@ public static class RegistrationExtensions
     }
 
 
-    public static IClassSourceResult ToSource(this IEnumerable<Type> types)
+    public static IClassSourceResult AsRegistrable(this IEnumerable<Type> types)
     {
         return new RegistrationTaskBuilder().From(types);
     }
