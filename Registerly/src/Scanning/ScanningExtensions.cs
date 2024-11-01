@@ -1,5 +1,5 @@
-﻿using DeviantCoding.Registerly.AttributeRegistration;
-using System.Reflection;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.AttributeRegistration;
 
 namespace DeviantCoding.Registerly.Scanning;
 

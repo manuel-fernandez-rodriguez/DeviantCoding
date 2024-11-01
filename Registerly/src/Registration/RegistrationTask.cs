@@ -3,12 +3,16 @@ using DeviantCoding.Registerly.Strategies;
 
 namespace DeviantCoding.Registerly.Registration;
 
-public class RegistrationTask 
+public class RegistrationTask
 {
-    public required SourceSelectorDelegate SourceSelector { get; init; }
+    required public SourceSelectorDelegate SourceSelector { get; init; }
+
     public ILifetimeStrategy? LifetimeStrategy { get; internal set; }
+
     public IMappingStrategy? MappingStrategy { get; internal set; }
+
     public IRegistrationStrategy? RegistrationStrategy { get; internal set; }
+
     public IQueryable<Type> Classes { get; internal set; } = Enumerable.Empty<Type>().AsQueryable();
 
     internal void ApplyPredicate(ClassFilterDelegate predicate)

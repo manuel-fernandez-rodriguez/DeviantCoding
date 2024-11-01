@@ -1,6 +1,6 @@
-﻿using DeviantCoding.Registerly.AttributeRegistration;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.AttributeRegistration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly.Strategies.Registration;
 
@@ -21,5 +21,4 @@ public class AttributeRegistrationStrategy : IRegistrationStrategy
         => descriptor.ImplementationType?
                 .GetCustomAttribute<RegisterlyAttribute>()?
                 .RegistrationStrategy ?? new AddRegistrationStrategy();
-
 }

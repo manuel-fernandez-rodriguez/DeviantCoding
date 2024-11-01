@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DeviantCoding.Registerly.Strategies.Mapping
+﻿namespace DeviantCoding.Registerly.Strategies.Mapping
 {
+    using Microsoft.Extensions.DependencyInjection;
+
     public class AsSelf : IMappingStrategy
     {
         public IEnumerable<ServiceDescriptor> Map(IEnumerable<Type> implementationTypes, ILifetimeStrategy lifetimeStrategy)

@@ -1,10 +1,10 @@
-﻿using DeviantCoding.Registerly.Scanning;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly;
 
@@ -30,7 +30,7 @@ public static class FluentInterfaceExtensions
 
     public static IMappingStrategyDefinitionResult WithFactory<TService>(this IMappingStrategyDefinition target, Func<IServiceProvider, TService> factory)
         where TService : notnull
-        => target.WithMappingStrategy(new WithFactory<TService> (factory));
+        => target.WithMappingStrategy(new WithFactory<TService>(factory));
 
     public static IMappingStrategyDefinitionResult WithMappingStrategy<TStrategy>(this IMappingStrategyDefinition target )
         where TStrategy : IMappingStrategy, new()

@@ -1,12 +1,21 @@
-﻿using DeviantCoding.Registerly.AttributeRegistration;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.AttributeRegistration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly.Strategies.Lifetime;
 
-public class Scoped() : LifetimeStrategy(ServiceLifetime.Scoped) { }
-public class Singleton() : LifetimeStrategy(ServiceLifetime.Singleton) { }
-public class Transient() : LifetimeStrategy(ServiceLifetime.Transient) { }
+public class Scoped() : LifetimeStrategy(ServiceLifetime.Scoped)
+{
+}
+
+public class Singleton() : LifetimeStrategy(ServiceLifetime.Singleton)
+{
+}
+
+public class Transient() : LifetimeStrategy(ServiceLifetime.Transient)
+{
+}
+
 public class AttributeLifetimeStrategy : ILifetimeStrategy
 {
     public ServiceLifetime Map(Type implementationType)

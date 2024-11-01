@@ -1,6 +1,6 @@
-﻿using DeviantCoding.Registerly;
+﻿using System.Reflection;
+using DeviantCoding.Registerly;
 using Microsoft.Extensions.Hosting;
-using System.Reflection;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
@@ -34,5 +34,4 @@ public static class AttributeRegistrationExtensions
             .Register(classes => classes
                 .FromAssemblies(assemblies)
                 .UsingAttributes());
-
 }

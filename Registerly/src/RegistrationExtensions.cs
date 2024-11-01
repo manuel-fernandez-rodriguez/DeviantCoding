@@ -1,5 +1,4 @@
 ﻿using DeviantCoding.Registerly.Registration;
-using DeviantCoding.Registerly.Scanning;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DeviantCoding.Registerly;

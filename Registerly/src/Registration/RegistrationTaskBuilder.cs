@@ -1,23 +1,23 @@
-﻿using DeviantCoding.Registerly.Scanning;
-using DeviantCoding.Registerly.Strategies;
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
+using DeviantCoding.Registerly.Scanning;
+using DeviantCoding.Registerly.Strategies;
 
 namespace DeviantCoding.Registerly.Registration;
 
 internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
-    IClassSource, 
+    IClassSource,
     IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResult
 {
     private readonly List<RegistrationTask> _tasks = [];
 
-    IClassSourceResult IClassSource.FromAssemblies(IEnumerable<Assembly> assemblies) 
+    IClassSourceResult IClassSource.FromAssemblies(IEnumerable<Assembly> assemblies)
         => AddNew(() => TypeScanner.From(assemblies));
 
-    IClassSourceResult IClassSource.From(IEnumerable<Type> candidates) 
+    IClassSourceResult IClassSource.From(IEnumerable<Type> candidates)
         => AddNew(() => TypeScanner.From(candidates));
 
-    IClassSourceResult IClassSource.FromDependencyContext() 
+    IClassSourceResult IClassSource.FromDependencyContext()
         => AddNew(() => TypeScanner.FromDependencyContext());
 
     IClassSourceResult IClassSource.Where(ClassFilterDelegate predicate)
@@ -31,12 +31,12 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         return this;
     }
 
-    IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate) 
+    IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate)
         => AddNew(GetCurrentTask().SourceSelector, predicate);
 
     ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy lifetimeStrategy)
         => ForEach(task => task.LifetimeStrategy ??= lifetimeStrategy);
-    
+
     IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy)
         => ForEach(task => task.MappingStrategy ??= mappingStrategy);
 
@@ -56,7 +56,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         _tasks.Add(new()
         {
             SourceSelector = sourceSelector,
-            Classes = sourceSelector().Where(t => serviceSelector(t))
+            Classes = sourceSelector().Where(t => serviceSelector(t)),
         });
         return this;
     }
@@ -67,6 +67,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         {
             action(task);
         }
+
         return this;
     }
 
@@ -76,9 +77,10 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         {
             throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
         }
+
         return _tasks.Last();
     }
 
-    private IClassSourceResult FromDefaultSource(ClassFilterDelegate predicate) 
+    private IClassSourceResult FromDefaultSource(ClassFilterDelegate predicate)
         => ((IClassSource)this).FromDependencyContext().Where(predicate);
 }

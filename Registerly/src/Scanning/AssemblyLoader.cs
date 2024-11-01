@@ -6,9 +6,9 @@ internal class AssemblyLoader(ClassFilterDelegate defaultFilter)
 {
     public static readonly ClassFilterDelegate DefaultFilter = t => t.IsRegistrable();
 
-    public AssemblyLoader() : this(DefaultFilter)
+    public AssemblyLoader()
+        : this(DefaultFilter)
     {
-
     }
 
     public IQueryable<Type> FromAssemblyNames(IEnumerable<AssemblyName> assemblyNames, ClassFilterDelegate typeFilter)
@@ -16,7 +16,6 @@ internal class AssemblyLoader(ClassFilterDelegate defaultFilter)
         var assemblies = LoadAssemblies(assemblyNames);
         return FromAssemblies(assemblies, typeFilter);
     }
-
 
     public IQueryable<Type> FromAssemblies(IEnumerable<Assembly> assemblies, ClassFilterDelegate? typeFilter = null)
     {
@@ -38,7 +37,7 @@ internal class AssemblyLoader(ClassFilterDelegate defaultFilter)
                 // Try to load the referenced assembly...
                 assemblies.Add(Assembly.Load(assemblyName));
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 throw;
             }

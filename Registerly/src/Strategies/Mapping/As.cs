@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DeviantCoding.Registerly.Strategies.Mapping
+﻿namespace DeviantCoding.Registerly.Strategies.Mapping
 {
-    public class As<T>() : As(typeof(T))
-    { }
+    using Microsoft.Extensions.DependencyInjection;
 
+    public class As<T>() : As(typeof(T))
+    {
+    }
 
     public class As(Type serviceType) : IMappingStrategy
     {

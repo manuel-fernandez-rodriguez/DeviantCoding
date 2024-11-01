@@ -1,6 +1,6 @@
-﻿using DeviantCoding.Registerly.AttributeRegistration;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.AttributeRegistration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly.Strategies.Mapping;
 
@@ -11,8 +11,7 @@ internal class AttributeMappingStrategy : IMappingStrategy
 
     public IEnumerable<ServiceDescriptor> Map(IEnumerable<Type> implementationTypes, ILifetimeStrategy lifetimeStrategy)
     {
-        
-        foreach(var implementationType in implementationTypes)
+        foreach (var implementationType in implementationTypes)
         {
             var mappingStrategy = implementationType
                .GetCustomAttribute<RegisterlyAttribute>()?
@@ -39,8 +38,5 @@ internal class AttributeMappingStrategy : IMappingStrategy
                 yield return serviceDescriptor;
             }
         }
-
-        
     }
 }
-
