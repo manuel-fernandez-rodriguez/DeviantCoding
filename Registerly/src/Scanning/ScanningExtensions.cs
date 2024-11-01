@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DeviantCoding.Registerly.Scanning
 {
-    internal static class ReflectionExtensions
+    internal static class ScanningExtensions
     {
         internal static IReadOnlyCollection<Type> GetLoadableTypes(this Assembly assembly)
         {

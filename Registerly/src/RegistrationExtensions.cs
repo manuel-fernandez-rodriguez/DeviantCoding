@@ -12,12 +12,6 @@ public static class RegistrationExtensions
         return services.Register(tasks);
     }
 
-
-    public static IClassSourceResult AsRegistrable(this IEnumerable<Type> types)
-    {
-        return new RegistrationTaskBuilder().From(types);
-    }
-
     public static IServiceCollection Register(this IServiceCollection services, IRegistrationTaskSource source)
     {
         foreach (var task in source)

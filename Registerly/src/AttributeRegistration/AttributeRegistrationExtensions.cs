@@ -11,7 +11,7 @@ using System.Reflection;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
-public static class SelfRegistrationExtensions
+public static class AttributeRegistrationExtensions
 {
     public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app)
     {
@@ -23,9 +23,11 @@ public static class SelfRegistrationExtensions
     {
         return services.Register(classes => classes
                 .FromDependencyContext()
-                .RegisterByAttributes());
+                .UsingAttributes());
     }
 
+    public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, params Assembly[] assemblies)
+        => app.RegisterServicesByAttributes(assemblies.AsEnumerable());
 
     public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
@@ -33,17 +35,14 @@ public static class SelfRegistrationExtensions
         return app;
     }
 
+    public static IServiceCollection RegisterByAttributes(this IServiceCollection services, params Assembly[] assemblies)
+        => services.RegisterByAttributes(assemblies.AsEnumerable());
+
     public static IServiceCollection RegisterByAttributes(this IServiceCollection services, IEnumerable<Assembly> assemblies)
     {
         return services.Register(classes =>classes
                 .FromAssemblies(assemblies)
-                .RegisterByAttributes());
+                .UsingAttributes());
     }
 
-    private static IRegistrationTaskSource RegisterByAttributes(this IClassSourceResult classes)
-    {
-        return classes
-            .Where(t => t.IsMarkedForAutoRegistration())
-            .Using<AttributeLifetimeStrategy, AttributeMappingStrategy, AttributeRegistrationStrategy>();
-    }
 }

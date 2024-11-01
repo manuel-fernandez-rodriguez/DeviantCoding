@@ -4,9 +4,17 @@ using Microsoft.Extensions.Hosting;
 
 namespace DeviantCoding.Registerly.UnitTests;
 
-public class AutoRegisterServicesTest
+public class RegisterByAttributesTest
 {
     private readonly IServiceCollection _services = new ServiceCollection();
+
+    [Fact]
+    public void BasicTest()
+    {
+        Assert(_services.Register(classes => classes
+            .FromAssemblyOf<RegisterByAttributesTest>()
+            .UsingAttributes()));
+    }
 
     [Fact]
     public void AutoRegisterServicesFromDefaultDependencyContext()
@@ -17,7 +25,7 @@ public class AutoRegisterServicesTest
     [Fact]
     public void AutoRegisterServicesFromAssemblies()
     {
-        Assert(_services.RegisterByAttributes([GetType().Assembly]));
+        Assert(_services.RegisterByAttributes(GetType().Assembly));
     }
 
     [Fact]

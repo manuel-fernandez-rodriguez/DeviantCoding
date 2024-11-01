@@ -179,15 +179,21 @@ public static class ReflectionExtensions
 
         return interfaceType;
     }
+    
+    public static bool AssignableTo<T>(this Type target) => target.AssignableTo(typeof(T));
+
+    public static bool AssignableTo(this Type target, Type type) => target.AssignableToAnyOf(type);
+
+    public static bool AssignableToAnyOf(this Type target, params Type[] types) => target.AssignableToAnyOf(types.AsEnumerable());
+
+    public static bool AssignableToAnyOf(this Type target, IEnumerable<Type> types) => types.Any(t => target.IsBasedOn(t));
 
     public static bool IsExactly<T>(this Type? target) => target == typeof(T);
 
-    public static bool AssignableTo<T>(this Type target) => target.AssignableTo(typeof(T));
+    public static bool IsExactlyAnyOf(this Type? target, params Type[] types) => target.IsExactlyAnyOf(types.AsEnumerable());
 
-    public static bool AssignableTo(this Type target, Type type) => target.AssignableToAny(type);
+    public static bool IsExactlyAnyOf(this Type? target, IEnumerable<Type> types) => types.Contains(target);
 
-    public static bool AssignableToAny(this Type target, params Type[] types) => target.AssignableToAny(types.AsEnumerable());
 
-    public static bool AssignableToAny(this Type target, IEnumerable<Type> types) => types.Any(t => target.IsBasedOn(t));
 
 }
