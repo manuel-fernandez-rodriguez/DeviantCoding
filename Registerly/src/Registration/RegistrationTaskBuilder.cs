@@ -1,4 +1,5 @@
-﻿using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly;
+using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using System.Collections;
 using System.Reflection;
@@ -12,30 +13,36 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
 
     private readonly List<RegistrationTask> _tasks = [];
 
-    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) => AddNew(() => TypeScanner.From(assemblies));
+    public IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies) 
+        => AddNew(() => TypeScanner.From(assemblies));
 
-    public IClassSourceResult From(IEnumerable<Type> candidates) => AddNew(() => TypeScanner.From(candidates));
+    public IClassSourceResult From(IEnumerable<Type> candidates) 
+        => AddNew(() => TypeScanner.From(candidates));
 
-    public IClassSourceResult FromDependencyContext() => AddNew(() => TypeScanner.FromDependencyContext());
+    public IClassSourceResult FromDependencyContext() 
+        => AddNew(() => TypeScanner.FromDependencyContext());
 
-    IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
-    {
-        var task = _tasks.LastOrDefault();
-        if (task != null)
-        {
-            task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
-        }
-        return this;
-    }
+    //IClassSourceResult IClassSourceResult.Where(ClassFilterDelegate predicate)
+    //{
+    //    var task = GetLastElement();
+    //    task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
+    //    return this;
+    //}
 
-    IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate)
+    IClassSourceResult IClassSource.Where(ClassFilterDelegate predicate)
     {
         if (_tasks.Count == 0)
         {
-            throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
+            return FromDependencyContext().Where(predicate);
         }
-        return AddNew(_tasks.Last().SourceSelector, predicate);
+
+        var task = GetLastElement();
+        task.Classes = task.Classes.Where(t => predicate(t)).AsQueryable();
+        return this;
     }
+
+    IClassSourceResult IClassSourceResult.AndAlso(ClassFilterDelegate predicate) 
+        => AddNew(GetLastElement().SourceSelector, predicate);
 
     ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy lifetimeStrategy)
         => ForEach(task => task.LifetimeStrategy ??= lifetimeStrategy);
@@ -46,9 +53,11 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
     IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
         => ForEach(task => task.RegistrationStrategy ??= registrationStrategy);
 
-    public IEnumerator<RegistrationTask> GetEnumerator() => _tasks.GetEnumerator();
+    IEnumerator<RegistrationTask> IEnumerable<RegistrationTask>.GetEnumerator()
+        => _tasks.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => _tasks.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+        => _tasks.GetEnumerator();
 
     private RegistrationTaskBuilder AddNew(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
     {
@@ -70,4 +79,15 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
         }
         return this;
     }
+
+    private RegistrationTask GetLastElement()
+    {
+        if (_tasks.Count == 0)
+        {
+            throw new InvalidOperationException("There is no current class source. Invoke any of the From* methods before calling this one.");
+        }
+        return _tasks.Last();
+    }
+
+    
 }

@@ -11,19 +11,19 @@ using ServiceDescriptorAssertionResult = FluentAssertions.AndWhichConstraint
 >;
 
 using Microsoft.Extensions.DependencyInjection;
+using DeviantCoding.Registerly.UnitTests;
 
 
 internal static class ServiceCollectionDescriptorAssertions
 {
-    public static ServiceCollectionDescriptorAssertion HaveSomeServiceImplementing<TService>(this ServiceCollectionDescriptorAssertion target)
+    public static ServiceDescriptorAssertionResult HaveAtLeastOne<TService>(this ServiceCollectionDescriptorAssertion target)
     {
-        var implementations = target.Subject.Where(target => target.ServiceType == typeof(TService));
-        return implementations.Should().NotBeEmpty().And;
+        return target.Contain(s => s.Exactly<TService>());
     }
 
-    public static ServiceDescriptorAssertionResult HaveSingleService<TService>(this ServiceCollectionDescriptorAssertion target)
+    public static ServiceDescriptorAssertionResult HaveSingle<TService>(this ServiceCollectionDescriptorAssertion target)
     {
-        return target.ContainSingle(s => s.ServiceType == typeof(TService));
+        return target.ContainSingle(s => s.Exactly<TService>());
     }
 
     public static ServiceDescriptorAssertionResult WithLifetime(this ServiceDescriptorAssertionResult result, ServiceLifetime lifetime)

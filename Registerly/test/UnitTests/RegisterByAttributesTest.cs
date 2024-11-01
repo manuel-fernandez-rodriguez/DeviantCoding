@@ -50,17 +50,24 @@ public class RegisterByAttributesTest
 
     private static void Assert(IServiceCollection services)
     {
-        services.Should().HaveSingleService<IScopedService>()
-            .WithImplementation<TestScopedService>()
-            .WithLifetime(ServiceLifetime.Scoped);
+        //services.Should().HaveAtLeastOne<IScopedService>()
+        //    .WithImplementation<TestScopedService>()
+        //    .WithLifetime(ServiceLifetime.Scoped);
 
-        services.Should().HaveSingleService<ITransientService>()
-            .WithImplementation<TestTransientService>()
-            .WithLifetime(ServiceLifetime.Transient);
+        //services.Should().HaveSingle<ITransientService>()
+        //    .WithImplementation<TestTransientService>()
+        //    .WithLifetime(ServiceLifetime.Transient);
 
-        services.Should().HaveSingleService<ISingletonService>()
-            .WithImplementation<TestSingletonService>()
-            .WithLifetime(ServiceLifetime.Singleton);
+        //services.Should().HaveSingle<ISingletonService>()
+        //    .WithImplementation<TestSingletonService>()
+        //    .WithLifetime(ServiceLifetime.Singleton);
+
+        services.Should()
+            .ContainSingle(s => s.Exactly<IScopedService, TestScopedService>(ServiceLifetime.Scoped))
+            .And.ContainSingle(s => s.Exactly<ITransientService, TestTransientService>(ServiceLifetime.Transient))
+            .And.ContainSingle(s => s.Exactly<ISingletonService, TestSingletonService>(ServiceLifetime.Singleton))
+            ;
+
     }
 
     

@@ -1,5 +1,4 @@
-﻿using DeviantCoding.Registerly.Registration;
-using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
@@ -16,9 +15,6 @@ public static class FluentInterfaceExtensions
 
     public static IClassSourceResult FromAssemblyOf<T>(this IClassSource source)
         => source.FromAssembly(typeof(T).Assembly);
-
-    public static IClassSourceResult Where(this IClassSource source, ClassFilterDelegate predicate)
-        => source.FromDependencyContext().Where(predicate);
 
     public static IMappingStrategyDefinitionResult AsImplementedInterfaces(this IMappingStrategyDefinition target)
         => target.WithMappingStrategy(new AsImplementedInterfaces());
@@ -77,7 +73,7 @@ public static class FluentInterfaceExtensions
     public static IStrategyDefinitionResult Using(this IClassSourceResult target, ServiceLifetime lifetime, IMappingStrategy mappingStrategy)
         => target.WithLifetime(lifetime.ToStrategy()).WithMappingStrategy(mappingStrategy);
 
-    public static IStrategyDefinitionResult UsingAttributes(this IClassSourceResult target)
+    public static IStrategyDefinitionResult UsingAttributes(this IClassSource target)
         => target.Where(t => t.IsMarkedForAutoRegistration())
             .Using<AttributeLifetimeStrategy, AttributeMappingStrategy, AttributeRegistrationStrategy>();
 }

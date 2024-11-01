@@ -1,6 +1,7 @@
 ﻿using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
+using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -10,7 +11,7 @@ namespace DeviantCoding.Registerly.UnitTests;
 
 public class ServiceRegistrationTest
 {
-    private readonly IServiceCollection _services = new ServiceCollection();
+    private readonly ServiceCollection _services = new();
 
     public interface IService1 { string Value { get; set; } }
     public interface IService2 { }
@@ -44,7 +45,7 @@ public class ServiceRegistrationTest
     [Fact]
     public void Verbose_compact_and_slim_styles_should_be_equivalent()
     {
-        TestRegistration(services => services
+        _services
             .Register(classes => classes
                 .FromAssemblyOf<Implementation1>()
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
@@ -59,22 +60,26 @@ public class ServiceRegistrationTest
                     .WithLifetime(ServiceLifetime.Transient)
                     .WithMappingStrategy<AsSelf>()
                     .WithRegistrationStrategy<AddRegistrationStrategy>()
-            )
-        );
+            );
 
-        TestRegistration(services => services
+        VerifyServices(_services);
+        _services.Clear();
+
+        _services
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
                     .Using<Scoped, AsSelf, AddRegistrationStrategy>()
                 .AndAlso(t => t == typeof(Implementation4))
-                    .Using<Singleton, AsImplementedInterfaces, AddRegistrationStrategy> ()
+                    .Using<Singleton, AsImplementedInterfaces, AddRegistrationStrategy>()
                 .AndAlso(t => t == typeof(Implementation5))
                     .Using<Transient, AsSelf, AddRegistrationStrategy>()
-            )
-        );
+            );
 
-        TestRegistration(services => services
+        VerifyServices(_services);
+        _services.Clear();
+
+        _services
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
@@ -83,42 +88,38 @@ public class ServiceRegistrationTest
                     .Using<Singleton>()
                 .AndAlso(t => t.Exactly<Implementation5>())
                     .Using<Transient, AsSelf>()
-            )
-        );
+            );
     }
 
     [Fact]
     public void Should_get_source_from_the_assembly_of_a_given_type()
     {
-        TestRegistration(services => services
-            .Register(classes => classes.FromAssemblyOf<IService1>()),
-            VerifyServices2
-        );
+        _services.Register(classes => classes.FromAssemblyOf<IService1>());
+            
+        VerifyServices2(_services);
     }
 
     [Fact]
     public void Should_register_by_interface()
     {
-        TestRegistration(services => services
+        _services
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
-                .Where(t => t.AssignableTo<IService2>())),
-            services =>
-            {
-                services.Should()
-                    .ContainSingle(s => s.Exactly<IService2, Implementation4>())
-                    .And.ContainSingle(s => s.Exactly<IService2, Implementation5>());
-            }
-        );
+                .Where(t => t.AssignableTo<IService2>())
+            );
+
+        _services.Should()
+            .HaveCount(2)
+            .And.ContainSingle(s => s.Exactly<IService2, Implementation4>())
+            .And.ContainSingle(s => s.Exactly<IService2, Implementation5>());
     }
 
     [Fact]
     public void Should_get_source_from_given_classes()
     {
-        TestRegistration(services => services
-            .Register(classes => classes.From(ClassList)),
-           VerifyServices2
-       );
+        _services.Register(classes => classes.From(ClassList));
+
+        VerifyServices2(_services);
     }
 
     [Fact]
@@ -134,7 +135,7 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_chain_sources()
     {
-        TestRegistration(services => services
+        _services
             .Register(classes => classes
                 .From(ClassList)
                 .FromAssemblyOf<Exception>()
@@ -142,37 +143,34 @@ public class ServiceRegistrationTest
                     .WithLifetime(ServiceLifetime.Scoped)
                 .AndAlso(t => t.Exactly<ArgumentNullException>())
                     .WithLifetime(ServiceLifetime.Transient)
-            ),
-            services =>
-            {
-                VerifyServices2(services);
-                services.Should()
-                    .ContainSingle(s => s.Exactly<ISerializable, Exception>(ServiceLifetime.Scoped))
-                    .And
-                    .ContainSingle(s => s.Exactly<ISerializable, ArgumentNullException>(ServiceLifetime.Transient));
+            );
 
-                var serviceProvider = services.BuildServiceProvider();
-                using var scope = serviceProvider.CreateScope();
-                var implementations = serviceProvider.GetRequiredService<IEnumerable<ISerializable>>();
-                implementations.Should()
-                    .Contain(o => o.GetType().Exactly<Exception>())
-                    .And
-                    .Contain(o => o.GetType().Exactly<ArgumentNullException>());
-            }
-       );
+        VerifyServices2(_services);
+
+        _services.Should()
+            .ContainSingle(s => s.Exactly<ISerializable, Exception>(ServiceLifetime.Scoped))
+            .And.ContainSingle(s => s.Exactly<ISerializable, ArgumentNullException>(ServiceLifetime.Transient));
+
+        var serviceProvider = _services.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+        var implementations = serviceProvider.GetRequiredService<IEnumerable<ISerializable>>();
+        implementations.Should()
+            .Contain(o => o.GetType().Exactly<Exception>())
+            .And
+            .Contain(o => o.GetType().Exactly<ArgumentNullException>());
     }
 
     [Fact]
     public void Should_register_as_designated_type()
     {
-        var services = _services
+        _services
             .Register(classes => classes
                 .From(ClassList)
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2)))
                 .As<IService1>());
 
-        services.Should().HaveCount(2);
-        services.Where(s => s.ServiceType.Exactly<IService1>()).Should()
+        _services.Should().HaveCount(2);
+        _services.Where(s => s.ServiceType.Exactly<IService1>()).Should()
             .HaveCount(2)
             .And.Contain(s => s.Exactly<IService1, Implementation1>())
             .And.Contain(s => s.Exactly<IService1, Implementation2>());
@@ -181,13 +179,13 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_use_default_context_when_not_specified()
     {
-        var services = _services
+        _services
            .Register(classes => classes
                .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2)))
                .As<IService1>());
 
-        services.Should().HaveCount(2);
-        services.Where(s => s.ServiceType.Exactly<IService1>()).Should()
+        _services.Should().HaveCount(2);
+        _services.Where(s => s.ServiceType.Exactly<IService1>()).Should()
             .HaveCount(2)
             .And.Contain(s => s.Exactly<IService1, Implementation1>())
             .And.Contain(s => s.Exactly<IService1, Implementation2>());
@@ -196,32 +194,24 @@ public class ServiceRegistrationTest
     [Fact]
     public void Should_register_as_factory()
     {
-        var services = _services.Register(classes => classes
+        _services.Register(classes => classes
             .From(ClassList)
             .Where(t => t.Exactly<Implementation1>())
                 .WithFactory<IService1>(s => new Implementation1 { Value = "potato1" })
             .AndAlso(t => t.Exactly<Implementation1>())
                 .WithFactory(s => new Implementation1 { Value = "potato2" }));
 
-        var serviceProvider = services.BuildServiceProvider(); 
+        var serviceProvider = _services.BuildServiceProvider(); 
         using var scope = serviceProvider.CreateScope();
         serviceProvider.GetRequiredService<IService1>().Value.Should().Be("potato1");
         serviceProvider.GetRequiredService<Implementation1>().Value.Should().Be("potato2");
     }
 
-    private static void TestRegistration(Action<IServiceCollection> action, Action<IServiceCollection>? verify = null)
-    {
-        verify ??= VerifyServices;
-
-        var services = new ServiceCollection();
-        action(services);
-        verify(services);
-    }
-
     private static void VerifyServices(IServiceCollection services)
     {
         services.Should()
-            .ContainSingle(s => s.Exactly<Implementation1, Implementation1>(ServiceLifetime.Scoped))
+            .HaveCount(5)
+            .And.ContainSingle(s => s.Exactly<Implementation1, Implementation1>(ServiceLifetime.Scoped))
             .And.ContainSingle(s => s.Exactly<Implementation2, Implementation2>(ServiceLifetime.Scoped))
             .And.ContainSingle(s => s.Exactly<Implementation3, Implementation3>(ServiceLifetime.Scoped))
             .And.ContainSingle(s => s.Exactly<IService2, Implementation4>(ServiceLifetime.Singleton))
@@ -229,7 +219,7 @@ public class ServiceRegistrationTest
     }
 
     private static void VerifyServices2(IServiceCollection services)
-    {
+    {        
         services.Where(s => s.ServiceType == typeof(IService1)).Should().HaveCount(3)
             .And.Contain(s => s.ImplementationType.Exactly<Implementation1>())
             .And.Contain(s => s.ImplementationType.Exactly<Implementation2>())

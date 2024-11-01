@@ -1,9 +1,10 @@
-﻿using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly.Registration;
+using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace DeviantCoding.Registerly.Registration;
+namespace DeviantCoding.Registerly;
 
 
 public interface IClassSource : IFluentInterface
@@ -11,15 +12,15 @@ public interface IClassSource : IFluentInterface
     IClassSourceResult FromAssemblies(IEnumerable<Assembly> assemblies);
     IClassSourceResult From(IEnumerable<Type> candidates);
     IClassSourceResult FromDependencyContext();
+    IClassSourceResult Where(ClassFilterDelegate predicate);
 }
 
 public interface IClassSourceResult : IFluentInterface, IClassSource, ILifetimeDefinition, IMappingStrategyDefinition, IRegistrationStrategyDefinition, IRegistrationTaskSource
 {
-    IClassSourceResult Where(ClassFilterDelegate predicate);
     IClassSourceResult AndAlso(ClassFilterDelegate predicate);
 }
 
-public interface  IStrategyDefinitionResult : IClassSourceResult, IRegistrationTaskSource, IClassSource { }
+public interface IStrategyDefinitionResult : IClassSourceResult, IRegistrationTaskSource, IClassSource { }
 
 public interface ILifetimeDefinition : IFluentInterface
 {
