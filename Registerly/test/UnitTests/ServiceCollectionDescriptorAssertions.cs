@@ -12,9 +12,8 @@ using ServiceDescriptorAssertionResult = FluentAssertions.AndWhichConstraint
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.Hosting;
 
-internal static class IHostApplicationBuilderExtensions
+internal static class ServiceCollectionDescriptorAssertions
 {
     public static ServiceCollectionDescriptorAssertion HaveSomeServiceImplementing<TService>(this ServiceCollectionDescriptorAssertion target)
     {
@@ -24,7 +23,7 @@ internal static class IHostApplicationBuilderExtensions
 
     public static ServiceDescriptorAssertionResult HaveSingleService<TService>(this ServiceCollectionDescriptorAssertion target)
     {
-        return target.Contain(s => s.ServiceType == typeof(TService));
+        return target.ContainSingle(s => s.ServiceType == typeof(TService));
     }
 
     public static ServiceDescriptorAssertionResult WithLifetime(this ServiceDescriptorAssertionResult result, ServiceLifetime lifetime)
@@ -35,23 +34,7 @@ internal static class IHostApplicationBuilderExtensions
 
     public static ServiceDescriptorAssertionResult WithImplementation<TImplementation>(this ServiceDescriptorAssertionResult result)
     {
-        result.Which.ImplementationType.Should().BeAssignableTo<TImplementation>();
+        result.Which.ImplementationType.Should().Be<TImplementation>();
         return result;
     }
-
-    public static ServiceDescriptorAssertionResult HaveService<TService, TImplementation>(this ServiceCollectionDescriptorAssertion target)
-    {
-        return target
-            .HaveSingleService<TService>()
-            .WithImplementation<TImplementation>();
-    }
-
-    public static ServiceDescriptorAssertionResult HaveSingleRegistrationFor<TService, TImplementation>(this ServiceCollectionDescriptorAssertion target, ServiceLifetime lifetime)
-    {
-        return target
-            .HaveSingleService<TService>()
-            .WithImplementation<TImplementation>()
-            .WithLifetime(lifetime);
-    }
-
 }

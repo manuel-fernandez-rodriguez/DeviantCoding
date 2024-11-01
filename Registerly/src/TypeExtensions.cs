@@ -188,11 +188,11 @@ public static class ReflectionExtensions
 
     public static bool AssignableToAnyOf(this Type target, IEnumerable<Type> types) => types.Any(t => target.IsBasedOn(t));
 
-    public static bool IsExactly<T>(this Type? target) => target == typeof(T);
+    public static bool Exactly<T>(this Type? target) => target == typeof(T);
 
-    public static bool IsExactlyAnyOf(this Type? target, params Type[] types) => target.IsExactlyAnyOf(types.AsEnumerable());
+    public static bool ExactlyAnyOf(this Type? target, params Type[] types) => target.ExactlyAnyOf(types.AsEnumerable());
 
-    public static bool IsExactlyAnyOf(this Type? target, IEnumerable<Type> types) => types.Contains(target);
+    public static bool ExactlyAnyOf(this Type? target, IEnumerable<Type> types) => types.Contains(target);
 
 
 

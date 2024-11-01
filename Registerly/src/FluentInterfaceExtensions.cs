@@ -17,6 +17,9 @@ public static class FluentInterfaceExtensions
     public static IClassSourceResult FromAssemblyOf<T>(this IClassSource source)
         => source.FromAssembly(typeof(T).Assembly);
 
+    public static IClassSourceResult Where(this IClassSource source, ClassFilterDelegate predicate)
+        => source.FromDependencyContext().Where(predicate);
+
     public static IMappingStrategyDefinitionResult AsImplementedInterfaces(this IMappingStrategyDefinition target)
         => target.WithMappingStrategy(new AsImplementedInterfaces());
 
