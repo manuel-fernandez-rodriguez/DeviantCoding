@@ -1,9 +1,7 @@
-﻿namespace DeviantCoding.Registerly.Strategies
-{
-    using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-    public interface ILifetimeStrategy
-    {
-        ServiceLifetime Map(Type implementationType);
-    }
+namespace DeviantCoding.Registerly.Strategies;
+public interface ILifetimeStrategy
+{
+    ServiceLifetime Map(Type implementationType);
 }
