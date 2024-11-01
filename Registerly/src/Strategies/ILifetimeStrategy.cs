@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace DeviantCoding.Registerly.Strategies
+namespace DeviantCoding.Registerly.Strategies;
+public interface ILifetimeStrategy
 {
-    public interface ILifetimeStrategy
-    {
-        ServiceLifetime Map(Type implementationType);
-    }
+    ServiceLifetime Map(Type implementationType);
 }

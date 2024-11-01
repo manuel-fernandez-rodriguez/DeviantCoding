@@ -1,9 +1,9 @@
 ﻿using DeviantCoding.Registerly.Strategies;
 
-namespace DeviantCoding.Registerly.SelfRegistration;
+namespace DeviantCoding.Registerly.AttributeRegistration;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class RegisterlyAttribute<TLifetimeStrategy, TMappingStrategy, TRegistrationStrategy>() 
+public class RegisterlyAttribute<TLifetimeStrategy, TMappingStrategy, TRegistrationStrategy>()
     : RegisterlyAttribute(new TLifetimeStrategy(), new TMappingStrategy(), new TRegistrationStrategy())
     where TLifetimeStrategy : ILifetimeStrategy, new()
     where TMappingStrategy : IMappingStrategy, new()
@@ -18,4 +18,3 @@ public class RegisterlyAttribute(ILifetimeStrategy? lifetimeStrategy, IMappingSt
 
     public IRegistrationStrategy? RegistrationStrategy { get; } = registrationStrategy;
 }
-

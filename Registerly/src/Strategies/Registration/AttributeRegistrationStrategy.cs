@@ -1,6 +1,6 @@
-﻿using DeviantCoding.Registerly.SelfRegistration;
+﻿using System.Reflection;
+using DeviantCoding.Registerly.AttributeRegistration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace DeviantCoding.Registerly.Strategies.Registration;
 
@@ -10,19 +10,15 @@ public class AttributeRegistrationStrategy : IRegistrationStrategy
     {
         foreach (var descriptor in descriptors)
         {
-            var registrationStrategy = descriptor.ImplementationType?
-                .GetCustomAttribute<RegisterlyAttribute>()?
-                .RegistrationStrategy;
-            
-            if (registrationStrategy != null)
-            {
-                registrationStrategy.RegisterServices(serviceCollection, [descriptor]);
-                continue;
-            }
-            
-            new AddRegistrationStrategy().RegisterServices(serviceCollection, [descriptor]);
+            GetRegistrationStrategy(descriptor)
+                .RegisterServices(serviceCollection, [descriptor]);
         }
 
         return serviceCollection;
     }
+
+    private IRegistrationStrategy GetRegistrationStrategy(ServiceDescriptor descriptor)
+        => descriptor.ImplementationType?
+                .GetCustomAttribute<RegisterlyAttribute>()?
+                .RegistrationStrategy ?? new AddRegistrationStrategy();
 }
