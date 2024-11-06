@@ -1,29 +1,78 @@
 ﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DeviantCoding.Registerly.Registration;
 
-public class RegistrationTask
+public interface IRegistrationTask
 {
-    required public SourceSelectorDelegate SourceSelector { get; init; }
+    IQueryable<Type> Classes { get; }
+    Strategies Strategies { get; }
+    SourceSelectorDelegate SourceSelector { get; }
+    void RegisterIn(IServiceCollection services);
+}
 
-    public ILifetimeStrategy? LifetimeStrategy { get; internal set; }
+internal class RegistrationTask : IRegistrationTask
+{
+    public RegistrationTask(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
+    {
+        serviceSelector ??= _ => true;
+        SourceSelector = sourceSelector;
+        Classes = sourceSelector().Where(t => serviceSelector(t));
+    }
 
-    public IMappingStrategy? MappingStrategy { get; internal set; }
+    public SourceSelectorDelegate SourceSelector { get; init; }
 
-    public IRegistrationStrategy? RegistrationStrategy { get; internal set; }
+    public Strategies Strategies { get; } = new Strategies();
 
-    public IQueryable<Type> Classes { get; internal set; } = Enumerable.Empty<Type>().AsQueryable();
+    public IQueryable<Type> Classes { get; private set; } = Enumerable.Empty<Type>().AsQueryable();
 
     internal void ApplyPredicate(ClassFilterDelegate predicate)
     {
         Classes = Classes.Where(t => predicate(t)).AsQueryable();
     }
 
-    internal (ILifetimeStrategy lifetime, IMappingStrategy mapping, IRegistrationStrategy registration) GetStrategies()
+    internal void RegisterIn(IServiceCollection services)
     {
-        return (LifetimeStrategy ?? Default.LifetimeStrategy,
-                MappingStrategy ?? Default.MappingStrategy,
-                RegistrationStrategy ?? Default.RegistrationStrategy);
+        var strategies = Strategies.ToFullySpecifiedStrategies();
+        var descriptors = strategies.MappingStrategy.Map(Classes, strategies.LifetimeStrategy);
+        strategies.RegistrationStrategy.RegisterServices(services, descriptors);
     }
+
+    #region IRegistrationTask implementation
+    IQueryable<Type> IRegistrationTask.Classes => Classes;
+    Strategies IRegistrationTask.Strategies => Strategies;
+    SourceSelectorDelegate IRegistrationTask.SourceSelector => SourceSelector;
+    void IRegistrationTask.RegisterIn(IServiceCollection services) => RegisterIn(services);
+    #endregion
+}
+
+public class Strategies
+{
+    public ILifetimeStrategy? LifetimeStrategy { get; private set; }
+
+    public IMappingStrategy? MappingStrategy { get; private set; }
+
+    public IRegistrationStrategy? RegistrationStrategy { get; private set; }
+
+    internal FullySpecifiedStrategies ToFullySpecifiedStrategies() => new(this);
+
+    internal void SetIfNull(ILifetimeStrategy? lifetimeStrategy, IMappingStrategy? mappingStrategy, IRegistrationStrategy? registrationStrategy)
+    {
+        LifetimeStrategy ??= lifetimeStrategy;
+        MappingStrategy ??= mappingStrategy;
+        RegistrationStrategy ??= registrationStrategy;
+    }
+
+}
+
+
+internal class FullySpecifiedStrategies(Strategies strategies)
+{
+    public ILifetimeStrategy LifetimeStrategy { get; } = strategies.LifetimeStrategy ?? Default.LifetimeStrategy;
+
+    public IMappingStrategy MappingStrategy { get; } = strategies.MappingStrategy ?? Default.MappingStrategy;
+
+    public IRegistrationStrategy RegistrationStrategy { get; } = strategies.RegistrationStrategy ?? Default.RegistrationStrategy;
+
 }

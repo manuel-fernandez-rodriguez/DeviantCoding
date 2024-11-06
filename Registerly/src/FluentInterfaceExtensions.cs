@@ -58,7 +58,7 @@ public static class FluentInterfaceExtensions
     public static IStrategyDefinitionResult Using<TLifetime, TMappingStrategy>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
         where TMappingStrategy : IMappingStrategy, new()
-        => target.Using<TLifetime, TMappingStrategy, AddRegistrationStrategy>();
+        => target.Using<TLifetime, TMappingStrategy, Add>();
 
     public static IStrategyDefinitionResult Using<TLifetime, TMappingStrategy, TRegistrationStrategy>(this IClassSourceResult target)
         where TLifetime : ILifetimeStrategy, new()
