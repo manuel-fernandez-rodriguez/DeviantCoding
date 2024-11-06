@@ -6,10 +6,10 @@ name: Build Registerly
 on:
   push:
     branches: [ "master" ]
-    paths: [ "Registerly" ]
+    paths: [ "Registerly/**" ]
   pull_request:
     branches: [ "master" ]
-    paths: [ "Registerly" ]
+    paths: [ "Registerly/**" ]
   workflow_dispatch:
 
 jobs:
