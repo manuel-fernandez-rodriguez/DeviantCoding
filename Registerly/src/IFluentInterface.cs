@@ -54,7 +54,7 @@ public interface IRegistrationStrategyDefinitionResult : IFluentInterface, IStra
 {
 }
 
-public interface IRegistrationTaskSource : IFluentInterface, IEnumerable<RegistrationTask>
+public interface IRegistrationTaskSource : IFluentInterface, IEnumerable<IRegistrationTask>
 {
 }
 

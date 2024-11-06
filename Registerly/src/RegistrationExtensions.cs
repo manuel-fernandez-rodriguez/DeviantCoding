@@ -21,7 +21,7 @@ public static class RegistrationExtensions
         return services;
     }
 
-    private static void RegisterTask(this IServiceCollection services, RegistrationTask task)
+    private static void RegisterTask(this IServiceCollection services, IRegistrationTask task)
     {
         var (lifetime, mapping, registration) = task.GetStrategies();
         var descriptors = mapping.Map(task.Classes, lifetime);

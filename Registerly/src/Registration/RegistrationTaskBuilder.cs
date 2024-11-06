@@ -5,7 +5,7 @@ using DeviantCoding.Registerly.Strategies;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
+internal class RegistrationTaskBuilder() : IEnumerable<IRegistrationTask>,
     IClassSource,
     IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResult
 {
@@ -27,7 +27,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
             return FromDefaultSource(predicate);
         }
 
-        GetCurrentTask().ApplyPredicate(t => predicate(t));
+        GetCurrentTask().ApplyPredicate(predicate);
         return this;
     }
 
@@ -51,7 +51,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<RegistrationTask>,
                 task.RegistrationStrategy ??= registrationStrategy;
             });
 
-    IEnumerator<RegistrationTask> IEnumerable<RegistrationTask>.GetEnumerator()
+    IEnumerator<IRegistrationTask> IEnumerable<IRegistrationTask>.GetEnumerator()
         => _tasks.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
