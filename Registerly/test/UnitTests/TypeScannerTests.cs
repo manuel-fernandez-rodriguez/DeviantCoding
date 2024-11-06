@@ -1,4 +1,5 @@
-﻿using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly.AttributeRegistration;
+using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
 
 namespace DeviantCoding.Registerly.UnitTests
@@ -32,7 +33,7 @@ namespace DeviantCoding.Registerly.UnitTests
         public void Should_succesfully_execute_FromAssemblyNames()
         {
             var types = TypeScanner
-                .FromAssemblyNames([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
+                .From([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
                 .Where(t => t.Name.StartsWith("TypeScannerClass"));
 
             types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
@@ -54,7 +55,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void Should_apply_AssignableTo()
         {
-            TypeScanner.FromClasses(DecoratedTypes)
+            TypeScanner.From(DecoratedTypes)
                 .Where(t => t.AssignableTo<ITypeScannerInterface1>())
                 .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
 
