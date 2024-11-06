@@ -6,5 +6,5 @@ internal static class Default
 
     public static IMappingStrategy MappingStrategy { get; } = new Mapping.AsImplementedInterfaces();
 
-    public static IRegistrationStrategy RegistrationStrategy { get; } = new Registration.AddRegistrationStrategy();
+    public static IRegistrationStrategy RegistrationStrategy { get; } = new Registration.Add();
 }

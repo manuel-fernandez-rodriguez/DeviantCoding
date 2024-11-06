@@ -1,63 +1,63 @@
-﻿using DeviantCoding.Registerly.AttributeRegistration;
-using DeviantCoding.Registerly.Scanning;
+﻿using DeviantCoding.Registerly.Scanning;
 using DeviantCoding.Registerly.Strategies.Mapping;
 
-namespace DeviantCoding.Registerly.UnitTests;
-
-public class TypeScannerTests
+namespace DeviantCoding.Registerly.UnitTests
 {
-    public interface ITypeScannerInterface1 { }
-    [Scoped] public class TypeScannerClass1 : ITypeScannerInterface1 { }
-    [Singleton] public class TypeScannerClass2 : ITypeScannerInterface1 { }
-    [Transient<AsSelf>] public class TypeScannerClass3 { }
-    [Singleton<AsSelf>] public class TypeScannerClass4 { }
-
-
-    private readonly static Type[] _decoratedTypes = 
-        [
-        typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
-        typeof(TypeScannerClass4)
-        ];
-
-    [Fact]
-    public void Should_succesfully_execute_FromDependencyContext()
+    public class TypeScannerTests
     {
-        var types = TypeScanner
-            .FromDependencyContext()
-            .Where( t => t.Name.StartsWith("TypeScannerClass"));
+        public interface ITypeScannerInterface1 { }
+        [Scoped] public class TypeScannerClass1 : ITypeScannerInterface1 { }
+        [Singleton] public class TypeScannerClass2 : ITypeScannerInterface1 { }
+        [Transient<AsSelf>] public class TypeScannerClass3 { }
+        [Singleton<AsSelf>] public class TypeScannerClass4 { }
 
-        types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
-    }
 
-    [Fact]
-    public void Should_succesfully_execute_FromAssemblyNames()
-    {
-        var types = TypeScanner
-            .From([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
-            .Where(t => t.Name.StartsWith("TypeScannerClass"));
+        private static Type[] DecoratedTypes = 
+            [
+            typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
+            typeof(TypeScannerClass4)
+            ];
 
-        types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
-    }
-
-    [Fact]
-    public void Should_resolve_RegisterlyAttribute()
-    {
-        foreach (var type in _decoratedTypes)
+        [Fact]
+        public void Should_succesfully_execute_FromDependencyContext()
         {
-            type.IsMarkedForAutoRegistration()
-                .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
-            type.IsDefined(typeof(RegisterlyAttribute), true)
-                .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
+            var types = TypeScanner
+                .FromDependencyContext()
+                .Where( t => t.Name.StartsWith("TypeScannerClass"));
+
+            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+        }
+
+        [Fact]
+        public void Should_succesfully_execute_FromAssemblyNames()
+        {
+            var types = TypeScanner
+                .FromAssemblyNames([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
+                .Where(t => t.Name.StartsWith("TypeScannerClass"));
+
+            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+        }
+
+        [Fact]
+        public void Should_resolve_RegisterlyAttribute()
+        {
+            foreach (var type in DecoratedTypes)
+            {
+                type.IsMarkedForAutoRegistration()
+                    .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
+                type.IsDefined(typeof(RegisterlyAttribute), true)
+                    .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
+
+            }
+        }
+
+        [Fact]
+        public void Should_apply_AssignableTo()
+        {
+            TypeScanner.FromClasses(DecoratedTypes)
+                .Where(t => t.AssignableTo<ITypeScannerInterface1>())
+                .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
 
         }
-    }
-
-    [Fact]
-    public void Should_apply_AssignableTo()
-    {
-        TypeScanner.From(_decoratedTypes)
-            .Where(t => t.AssignableTo<ITypeScannerInterface1>())
-            .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
-
     }
 }

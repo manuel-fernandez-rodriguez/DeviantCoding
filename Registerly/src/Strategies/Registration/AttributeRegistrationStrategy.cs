@@ -20,5 +20,5 @@ public class AttributeRegistrationStrategy : IRegistrationStrategy
     private IRegistrationStrategy GetRegistrationStrategy(ServiceDescriptor descriptor)
         => descriptor.ImplementationType?
                 .GetCustomAttribute<RegisterlyAttribute>()?
-                .RegistrationStrategy ?? new AddRegistrationStrategy();
+                .RegistrationStrategy ?? new Add();
 }

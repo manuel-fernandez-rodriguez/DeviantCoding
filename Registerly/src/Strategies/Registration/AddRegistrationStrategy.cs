@@ -2,7 +2,7 @@
 
 namespace DeviantCoding.Registerly.Strategies.Registration;
 
-public class AddRegistrationStrategy : IRegistrationStrategy
+public class Add : IRegistrationStrategy
 {
     public IServiceCollection RegisterServices(IServiceCollection serviceCollection, IEnumerable<ServiceDescriptor> descriptors)
     {

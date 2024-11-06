@@ -35,21 +35,16 @@ internal class RegistrationTaskBuilder() : IEnumerable<IRegistrationTask>,
         => AddNew(GetCurrentTask().SourceSelector, predicate);
 
     ILifetimeDefinitionResult ILifetimeDefinition.WithLifetime(ILifetimeStrategy lifetimeStrategy)
-        => ForEach(task => task.LifetimeStrategy ??= lifetimeStrategy);
+        => ForEach(task => task.Strategies.SetIfNull(lifetimeStrategy, null, null));
 
     IMappingStrategyDefinitionResult IMappingStrategyDefinition.WithMappingStrategy(IMappingStrategy mappingStrategy)
-        => ForEach(task => task.MappingStrategy ??= mappingStrategy);
+        => ForEach(task => task.Strategies.SetIfNull(null, mappingStrategy, null));
 
     IRegistrationStrategyDefinitionResult IRegistrationStrategyDefinition.WithRegistrationStrategy(IRegistrationStrategy registrationStrategy)
-        => ForEach(task => task.RegistrationStrategy ??= registrationStrategy);
+        => ForEach(task => task.Strategies.SetIfNull(null, null, registrationStrategy));
 
     IStrategyDefinitionResult IClassSourceResult.Using(ILifetimeStrategy lifetimeStrategy, IMappingStrategy mappingStrategy, IRegistrationStrategy registrationStrategy)
-        => ForEach(task =>
-            {
-                task.LifetimeStrategy ??= lifetimeStrategy;
-                task.MappingStrategy ??= mappingStrategy;
-                task.RegistrationStrategy ??= registrationStrategy;
-            });
+        => ForEach(task => task.Strategies.SetIfNull(lifetimeStrategy, mappingStrategy, registrationStrategy));
 
     IEnumerator<IRegistrationTask> IEnumerable<IRegistrationTask>.GetEnumerator()
         => _tasks.GetEnumerator();
@@ -59,13 +54,7 @@ internal class RegistrationTaskBuilder() : IEnumerable<IRegistrationTask>,
 
     private RegistrationTaskBuilder AddNew(SourceSelectorDelegate sourceSelector, ClassFilterDelegate? serviceSelector = null)
     {
-        serviceSelector ??= _ => true;
-
-        _tasks.Add(new()
-        {
-            SourceSelector = sourceSelector,
-            Classes = sourceSelector().Where(t => serviceSelector(t)),
-        });
+        _tasks.Add(new(sourceSelector, serviceSelector));
         return this;
     }
 

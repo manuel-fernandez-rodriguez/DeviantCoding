@@ -1,9 +1,7 @@
 ﻿using DeviantCoding.Registerly.Strategies.Lifetime;
 using DeviantCoding.Registerly.Strategies.Mapping;
 using DeviantCoding.Registerly.Strategies.Registration;
-using FluentAssertions.Common;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using System.Runtime.Serialization;
 
@@ -52,15 +50,15 @@ public class ServiceRegistrationTest
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
                     .WithLifetime(ServiceLifetime.Scoped)
                     .WithMappingStrategy<AsSelf>()
-                    .WithRegistrationStrategy<AddRegistrationStrategy>()
+                    .WithRegistrationStrategy<Add>()
                 .AndAlso(t => t == typeof(Implementation4))
                     .WithLifetime(ServiceLifetime.Singleton)
                     .WithMappingStrategy<AsImplementedInterfaces>()
-                    .WithRegistrationStrategy<AddRegistrationStrategy>()
+                    .WithRegistrationStrategy<Add>()
                 .AndAlso(t => t == typeof(Implementation5))
                     .WithLifetime(ServiceLifetime.Transient)
                     .WithMappingStrategy<AsSelf>()
-                    .WithRegistrationStrategy<AddRegistrationStrategy>()
+                    .WithRegistrationStrategy<Add>()
             );
 
         VerifyServices(_services);
@@ -71,11 +69,11 @@ public class ServiceRegistrationTest
             .Register(classes => classes
                 .FromAssembly(Assembly.GetExecutingAssembly())
                 .Where(t => t.ExactlyAnyOf(typeof(Implementation1), typeof(Implementation2), typeof(Implementation3)))
-                    .Using<Scoped, AsSelf, AddRegistrationStrategy>()
+                    .Using<Scoped, AsSelf, Add>()
                 .AndAlso(t => t == typeof(Implementation4))
-                    .Using<Singleton, AsImplementedInterfaces, AddRegistrationStrategy>()
+                    .Using<Singleton, AsImplementedInterfaces, Add>()
                 .AndAlso(t => t == typeof(Implementation5))
-                    .Using<Transient, AsSelf, AddRegistrationStrategy>()
+                    .Using<Transient, AsSelf, Add>()
             );
 
         VerifyServices(_services);
