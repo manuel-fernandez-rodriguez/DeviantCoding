@@ -14,7 +14,7 @@ namespace DeviantCoding.Registerly.UnitTests
 
         private readonly TypeScanner _sut = new();
         
-        private static Type[] DecoratedTypes = 
+        private static readonly Type[] DecoratedTypes = 
             [
             typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
             typeof(TypeScannerClass4)
