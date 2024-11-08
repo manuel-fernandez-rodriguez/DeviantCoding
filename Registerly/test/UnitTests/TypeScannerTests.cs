@@ -12,17 +12,19 @@ namespace DeviantCoding.Registerly.UnitTests
         [Transient<AsSelf>] public class TypeScannerClass3 { }
         [Singleton<AsSelf>] public class TypeScannerClass4 { }
 
-
+        private readonly TypeScanner _sut = new();
+        
         private static Type[] DecoratedTypes = 
             [
             typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
             typeof(TypeScannerClass4)
             ];
 
+
         [Fact]
         public void Should_succesfully_execute_FromDependencyContext()
         {
-            var types = TypeScanner
+            var types = _sut
                 .FromDependencyContext()
                 .Where( t => t.Name.StartsWith("TypeScannerClass"));
 
@@ -32,7 +34,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void Should_succesfully_execute_FromAssemblyNames()
         {
-            var types = TypeScanner
+            var types = _sut
                 .From([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
                 .Where(t => t.Name.StartsWith("TypeScannerClass"));
 
@@ -55,7 +57,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void Should_apply_AssignableTo()
         {
-            TypeScanner.From(DecoratedTypes)
+            _sut.From(DecoratedTypes)
                 .Where(t => t.AssignableTo<ITypeScannerInterface1>())
                 .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
 
