@@ -5,20 +5,25 @@ using DeviantCoding.Registerly.Strategies;
 
 namespace DeviantCoding.Registerly.Registration;
 
-internal class RegistrationTaskBuilder() : IEnumerable<IRegistrationTask>,
+internal class RegistrationTaskBuilder(TypeScanner typeScanner) : IEnumerable<IRegistrationTask>,
     IClassSource,
     IClassSourceResult, ILifetimeDefinitionResult, IMappingStrategyDefinitionResult, IRegistrationStrategyDefinitionResult, IStrategyDefinitionResult
 {
     private readonly List<RegistrationTask> _tasks = [];
 
+    public RegistrationTaskBuilder() : this(TypeScanner.Default)
+    {
+        
+    }
+
     IClassSourceResult IClassSource.FromAssemblies(IEnumerable<Assembly> assemblies)
-        => AddNew(() => TypeScanner.From(assemblies));
+        => AddNew(() => typeScanner.From(assemblies));
 
     IClassSourceResult IClassSource.From(IEnumerable<Type> candidates)
-        => AddNew(() => TypeScanner.From(candidates));
+        => AddNew(() => typeScanner.From(candidates));
 
     IClassSourceResult IClassSource.FromDependencyContext()
-        => AddNew(() => TypeScanner.FromDependencyContext());
+        => AddNew(() => typeScanner.FromDependencyContext());
 
     IClassSourceResult IClassSource.Where(ClassFilterDelegate predicate)
     {
