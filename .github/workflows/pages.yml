@@ -46,6 +46,7 @@ jobs:
         shell: bash
       - name: Build help
         run: |
+           docfx metadata
            docfx build
         shell: bash
       - name: Setup Pages
