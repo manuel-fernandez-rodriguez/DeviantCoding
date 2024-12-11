@@ -46,7 +46,6 @@ jobs:
         shell: bash
       - name: Build help
         run: |
-           cd ./docs
            docfx build
         shell: bash
       - name: Setup Pages
