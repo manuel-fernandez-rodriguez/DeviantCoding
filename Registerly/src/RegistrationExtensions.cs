@@ -12,6 +12,12 @@ public static class RegistrationExtensions
         return app;
     }
 
+    public static IHostApplicationBuilder Register(this IHostApplicationBuilder app, Func<IClassSource, IRegistrationTaskSource> classes)
+    {
+        app.Services.Register(classes(new RegistrationTaskBuilder()));
+        return app;
+    }
+
     public static IServiceCollection Register(this IServiceCollection services, Func<IClassSource, IRegistrationTaskSource> classes) 
         => services.Register(classes(new RegistrationTaskBuilder()));
 
