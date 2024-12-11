@@ -1,0 +1,6 @@
+- name: Installation
+  href: installation.md
+- name: Registration by Attributes
+  href: attributes.md
+- name: Registration by class selection
+  href: class-selection.md
