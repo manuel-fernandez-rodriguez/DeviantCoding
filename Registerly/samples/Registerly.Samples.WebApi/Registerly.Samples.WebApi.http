@@ -1,6 +1,11 @@
 @Registerly.Samples.WebApi_HostAddress = http://localhost:5109
 
-GET {{Registerly.Samples.WebApi_HostAddress}}/weatherforecast/
+GET {{Registerly.Samples.WebApi_HostAddress}}/chatterbox/greet
+Accept: application/json
+
+###
+
+GET {{Registerly.Samples.WebApi_HostAddress}}/chatterbox/farewell
 Accept: application/json
 
 ###
