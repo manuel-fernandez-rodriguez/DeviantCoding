@@ -1,43 +1,63 @@
 using DeviantCoding.Registerly;
+using DeviantCoding.Registerly.AttributeRegistration;
 using DeviantCoding.Registerly.Strategies.Lifetime;
-using Registerly.Samples.WebApi.Services;
+using Microsoft.AspNetCore.Mvc;
+
+// Start the application and use the provided http file to test it.
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Three ways to register the WeatherService class
+// Two ways to register service classes:
+// - Marking the class with an attribute
+// - Manually registering a class
 
-//builder.RegisterServicesByAttributes();
+builder.RegisterServicesByAttributes();
 
 builder.Register(classes => classes
-    .Where(c => c.Exactly<WeatherService>())
+    .FromAssemblyOf<FarewellerService>()
+    .Where(c => c.Exactly<FarewellerService>())
     .Using<Singleton>());
 
-// The following registration is more performant:
-//builder.Register(classes => classes
-//    .FromAssemblyOf<WeatherService>()
-//    .Where(c => c.Exactly<WeatherService>())
-//    .Using<Singleton>());
-
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+    
+
+
+[ApiController]
+[Route("chatterbox")]
+public class ChatterboxController(IGreeterService greeterService, IFarewellerService farewellerService) : ControllerBase
+{
+    [HttpGet("greet")]
+    public string Greet() => greeterService.Greet();
+
+    [HttpGet("farewell")]
+    public string Farewell() => farewellerService.Farewell();
+}
+
+
+public interface IGreeterService
+{
+    string Greet();
+}
+
+[Singleton]
+public class GreeterService : IGreeterService
+{
+    public string Greet() => "Hello, World!";
+}
+
+public interface IFarewellerService
+{
+    string Farewell();
+}
+
+public class FarewellerService : IFarewellerService
+{
+    public string Farewell() => "Goodbye, World!";
+}
