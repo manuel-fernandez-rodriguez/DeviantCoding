@@ -1,0 +1,25 @@
+name: Publish Registerly
+concurrency: Registerly
+
+on:
+  release:
+    types: [published]
+
+env:
+  PROJECT: Registerly
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: NUGETTEST.ORG
+    steps:
+    - name: Get package
+      env:  
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+        tag: ${{ github.ref_name }}
+      run: |
+        gh release download "${{ env.tag }}"
+      shell: bash
+    - name: Publish to nuget.org
+      run: dotnet nuget push ./*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_URL }} 
