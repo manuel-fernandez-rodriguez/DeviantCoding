@@ -14,3 +14,5 @@ There are two main, non-exclusive, ways to use the package functionality, both r
 - Selecting the classes to register by using `builder.Register` and, optionally applying a strategy to register them.
 
 The former is the easiest way to register classes, while the latest is the most powerful and versatile.
+
+You can see [a very simple example of both strategies in action](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/tree/master/Registerly/samples/Registerly.Samples.WebApi).
