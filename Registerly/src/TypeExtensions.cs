@@ -115,18 +115,60 @@ public static class ReflectionExtensions
         return interfaceType;
     }
 
+    /// <summary>
+    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) to type <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">Type to compare to</typeparam>
+    /// <param name="target">Type to check</param>
+    /// <returns>True if <paramref name="target"/> is assignable to <typeparamref name="T"/></returns>
     public static bool AssignableTo<T>(this Type target) => target.AssignableTo(typeof(T));
 
+    /// <summary>
+    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) to type <typeparamref name="T"/>
+    /// </summary>
+    /// <param name="target">Type to check</param>
+    /// <param name="type">Type to compare to</param>
+    /// <returns>True if <paramref name="target"/> is assignable to <typeparamref name="T"/></returns>
     public static bool AssignableTo(this Type target, Type type) => target.AssignableToAnyOf(type);
 
+    /// <summary>
+    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) any of the types supplied in <paramref name="types"/>
+    /// </summary>
+    /// <param name="target">Type to check</param>
+    /// <param name="types">Types to compare to</param>
+    /// <returns>True if <paramref name="target"/> is assignable to any of <paramref name="types"/></returns>
     public static bool AssignableToAnyOf(this Type target, params Type[] types) => target.AssignableToAnyOf(types.AsEnumerable());
 
+    /// <summary>
+    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) any of the types supplied in <paramref name="types"/>
+    /// </summary>
+    /// <param name="target">Type to check</param>
+    /// <param name="types">Types to compare to</param>
+    /// <returns>True if <paramref name="target"/> is assignable to any of <paramref name="types"/></returns>
     public static bool AssignableToAnyOf(this Type target, IEnumerable<Type> types) => types.Any(t => target.IsBasedOn(t));
 
+    /// <summary>
+    /// Determines whether the <paramref name="target"/> is exactly of type <typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">Type to compare to</typeparam>
+    /// <param name="target">Type to compare</param>
+    /// <returns>True if <paramref name="target"/> is exactly of type <typeparamref name="T"/></returns>
     public static bool Exactly<T>(this Type? target) => target == typeof(T);
 
+    /// <summary>
+    /// Determines whether the <paramref name="target"/> is exactly of at least one of the types specified in <paramref name="types"/>
+    /// </summary>
+    /// <param name="target">Type to compare</param>
+    /// <param name="types">Array of types to compare <paramref name="target"/> to</param>
+    /// <returns>True if <paramref name="target"/> is exactly at least one of the types specified in <paramref name="types"/></returns>
     public static bool ExactlyAnyOf(this Type? target, params Type[] types) => target.ExactlyAnyOf(types.AsEnumerable());
 
+    /// <summary>
+    /// Determines whether the <paramref name="target"/> is exactly of at least one of the types specified in <paramref name="types"/>
+    /// </summary>
+    /// <param name="target">Type to compare</param>
+    /// <param name="types">Array of types to compare <paramref name="target"/> to</param>
+    /// <returns>True if <paramref name="target"/> is exactly at least one of the types specified in <paramref name="types"/></returns>
     public static bool ExactlyAnyOf(this Type? target, IEnumerable<Type> types) => types.Contains(target);
 
     private static bool IsAssignableToGenericTypeDefinition(this Type type, Type genericType)

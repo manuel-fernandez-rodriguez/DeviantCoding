@@ -5,13 +5,7 @@ using Microsoft.Extensions.Hosting;
 namespace DeviantCoding.Registerly;
 
 public static class RegistrationExtensions
-{
-    public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, Func<IClassSource, IRegistrationTaskSource> classes)
-    {
-        _ = app.Services.Register(classes);
-        return app;
-    }
-
+{  
     public static IHostApplicationBuilder Register(this IHostApplicationBuilder app, Func<IClassSource, IRegistrationTaskSource> classes)
     {
         app.Services.Register(classes(new RegistrationTaskBuilder()));
