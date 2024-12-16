@@ -47,6 +47,25 @@ public class RegisterByAttributesTest
             .Should().BeOfType<TestSingletonService>();
     }
 
+    [Fact]
+    public void ResolveServicesFromCustomAssemblySource()
+    {
+        var host = Host.CreateEmptyApplicationBuilder(new());
+
+        host.RegisterServicesByAttributes(classes => classes.FromAssemblyOf<TestScopedService>());
+
+        var services = host.Services.BuildServiceProvider();
+
+        services.GetRequiredService<IScopedService>()
+            .Should().BeOfType<TestScopedService>();
+
+        services.GetRequiredService<ITransientService>()
+            .Should().BeOfType<TestTransientService>();
+
+        services.GetRequiredService<ISingletonService>()
+            .Should().BeOfType<TestSingletonService>();
+    }
+
 
     private static void Assert(IServiceCollection services)
     {
