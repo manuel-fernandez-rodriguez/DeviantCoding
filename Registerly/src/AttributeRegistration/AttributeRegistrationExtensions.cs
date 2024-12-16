@@ -16,7 +16,11 @@ public static class AttributeRegistrationExtensions
     /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
     /// <example>
+    /// <code>
+    /// var host = Host.CreateDefaultBuilder(args);
     /// host.RegisterServicesByAttributes();
+    /// var app = host.Build();
+    /// </code>
     /// </example>
     public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app)
     {
@@ -33,7 +37,12 @@ public static class AttributeRegistrationExtensions
     /// <param name="classes">Expression that selects the classes to register</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
     /// <example>
-    /// host.RegisterServicesByAttributes(classes => classes.FromAssemblyOf<TestScopedService>());
+    /// <code>
+    /// using Microsoft.Extensions.Hosting;
+    /// var host = Host.CreateDefaultBuilder(args);
+    /// host.RegisterServicesByAttributes(classes => classes.FromAssemblyOf&lt;TestScopedService&gt;());
+    /// var app = host.Build();
+    /// </code>
     /// </example>
     public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, Func<IClassSource, IClassSourceResult> classes)
     {
@@ -47,9 +56,13 @@ public static class AttributeRegistrationExtensions
     /// and registers them in the target service collection.
     /// </summary>
     /// <param name="services">Target where services should be registered in</param>
-    /// <returns>Tbe same <see cref="IServiceCollection"/> it was invoked on</returns>
+    /// <returns>The same <see cref="IServiceCollection"/> it was invoked on</returns>
     /// <example>
-    /// host.Services.RegisterByAttributes()
+    /// <code>
+    /// var host = Host.CreateDefaultBuilder(args);
+    /// host.Services.RegisterByAttributes();
+    /// var app = host.Build();
+    /// </code>
     /// </example>
     public static IServiceCollection RegisterByAttributes(this IServiceCollection services)
         => services.Register(classes => classes.UsingAttributes());
@@ -73,6 +86,13 @@ public static class AttributeRegistrationExtensions
     /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
     /// <param name="assemblies">List of <see cref="Assembly"/> to search in.</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
+    /// <example>
+    /// <code>
+    /// var host = Host.CreateDefaultBuilder(args);
+    /// host.RegisterServicesByAttributes(Assembly.GetExecutingAssembly());
+    /// var app = host.Build();
+    /// </code>
+    /// </example>
     public static IHostApplicationBuilder RegisterServicesByAttributes(this IHostApplicationBuilder app, IEnumerable<Assembly> assemblies)
     {
         _ = app.Services.RegisterByAttributes(assemblies);
@@ -87,6 +107,12 @@ public static class AttributeRegistrationExtensions
     /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
     /// <param name="assemblies">List of <see cref="Assembly"/> to search in.</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
+    /// <example>
+    /// <code>
+    /// var services = new ServiceCollection();
+    /// services.RegisterByAttributes(Assembly.GetExecutingAssembly());
+    /// </code>
+    /// </example>
     public static IServiceCollection RegisterByAttributes(this IServiceCollection services, params Assembly[] assemblies)
         => services.RegisterByAttributes(assemblies.AsEnumerable());
 
@@ -98,6 +124,12 @@ public static class AttributeRegistrationExtensions
     /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
     /// <param name="assemblies">List of <see cref="Assembly"/> to search in.</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
+    /// <example>
+    /// <code>
+    /// var services = new ServiceCollection();
+    /// services.RegisterByAttributes(Assembly.GetExecutingAssembly());
+    /// </code>
+    /// </example>
     public static IServiceCollection RegisterByAttributes(this IServiceCollection services, IEnumerable<Assembly> assemblies)
         => services
             .Register(classes => classes
