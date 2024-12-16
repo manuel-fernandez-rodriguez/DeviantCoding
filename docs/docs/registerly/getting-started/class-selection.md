@@ -39,7 +39,7 @@ var app = builder.Build();
 ```
 
 > [!NOTE]
-> If we intend to register the service as Scoped, we can omit the whole `As` clause, because `Scoped`
+> If we intend to register the service as Scoped, we can omit the whole `Using` clause, because `Scoped`
 is the default LifetimeStrategy.
 
 > [!NOTE]
