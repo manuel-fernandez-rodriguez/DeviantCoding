@@ -22,7 +22,7 @@
     <Title Condition=" '$(Title)' == ''">$(AssemblyName)</Title>
     <PackageId Condition=" '$(PackageId)' == ''">$(AssemblyName)</PackageId>
     <RepositoryUrl Condition=" '$(RepositoryUrl)' == ''">https://github.com/manuel-fernandez-rodriguez/DeviantCoding/</RepositoryUrl>
-    <PackageProjectUrl Condition=" '$(PackageProjectUrl)' == ''">https://github.com/manuel-fernandez-rodriguez/DeviantCoding/</PackageProjectUrl>
+    <PackageProjectUrl Condition=" '$(PackageProjectUrl)' == ''">https://manuel-fernandez-rodriguez.github.io/DeviantCoding/</PackageProjectUrl>
     <PackageReadmeFile Condition=" '$(PackageReadmeFile)' == ''">README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
