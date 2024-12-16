@@ -3,7 +3,7 @@
 DeviantCoding aims to group a set of opinionated components sharing a common code style and build tools.
 
 ## Registerly
-![Build](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-build.yml)
+![Build](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-build.yml?link=https%3A%2F%2Fgithub.com%2Fmanuel-fernandez-rodriguez%2FDeviantCoding%2Factions%2Fworkflows%2Fregisterly-build.yml)
 ![Release](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-publish.yml?label=release)
 
 ![Published Release](https://img.shields.io/github/v/release/manuel-fernandez-rodriguez/DeviantCoding?filter=Registerly*&label=published%20release)
