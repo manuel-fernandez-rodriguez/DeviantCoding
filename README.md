@@ -14,3 +14,5 @@ You can access the [Registerly documentation](https://manuel-fernandez-rodriguez
 ## Contributing
 Contributions are welcomed, even if they're only in the form of a well documented feature request, they help immensely to
 make any component better.
+
+Please, see the [guidelines on contributing](CONTRIBUTING.md)
