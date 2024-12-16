@@ -12,31 +12,22 @@ on:
         type: environment
         required: true
         default: 'NUGETTEST.ORG'
+      tag:
+        description: 'Release Tag to deploy'
+        required: true
 jobs:
   deployment:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Build
+    - uses: actions/checkout@v4    
+    - name: Get package
+      env:  
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+        tag: ${{ inputs.tag }}
       run: |
-         chmod +x ./Registerly/build.sh
-         cd ./Registerly/
-         ./build.sh
+        gh release download "${{ env.tag }}"
       shell: bash
     - name: Publish to nuget.org
-      run: dotnet nuget push ./Registerly/src/bin/Release/*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_URL }} 
-    - name: Get version
-      id: get-version
-      uses: kzrnm/get-net-sdk-project-versions-action@v2
-      with:
-        proj-path: ./Registerly/src/DeviantCoding.Registerly.csproj
-    - name: Publish artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: DeviantCoding.Registerly.${{ steps.get-version.outputs.version }}
-        path: ${{ github.workspace }}/Registerly/src/bin/Release/*.nupkg
+      run: dotnet nuget push ./*.nupkg --api-key ${{ secrets.NUGETORG_APIKEY }} --source ${{ vars.NUGETORG_URL }} 
