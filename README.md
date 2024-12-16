@@ -3,14 +3,28 @@
 DeviantCoding aims to group a set of opinionated components sharing a common code style and build tools.
 
 ## Registerly
-![Build](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-build.yml?link=https%3A%2F%2Fgithub.com%2Fmanuel-fernandez-rodriguez%2FDeviantCoding%2Factions%2Fworkflows%2Fregisterly-build.yml)
-![Release](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-publish.yml?label=release)
+<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/actions/workflows/registerly-build.yml">
+	<img src="https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-build.yml">
+</a>
+<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/actions/workflows/registerly-publish.yml">
+	<img src="https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-publish.yml?label=release">
+</a>
+<br/>
 
-![Published Release](https://img.shields.io/github/v/release/manuel-fernandez-rodriguez/DeviantCoding?filter=Registerly*&label=published%20release)
-![NuGet Stable](https://img.shields.io/nuget/v/DeviantCoding.Registerly?label=nuget%20stable)
-![NuGet Latest](https://img.shields.io/nuget/vpre/DeviantCoding.Registerly?label=nuget%20latest)
+<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/releases">
+	<img src="https://img.shields.io/github/v/release/manuel-fernandez-rodriguez/DeviantCoding?filter=Registerly*&label=published%20release">
+</a>
+<a href="https://nuget.org/packages/DeviantCoding.Registerly/">
+	<img src="https://img.shields.io/nuget/v/DeviantCoding.Registerly?label=nuget%20stable">
+</a>
+<a href="https://int.nugettest.org/packages/DeviantCoding.Registerly/">
+	<img src="https://img.shields.io/nuget/vpre/DeviantCoding.Registerly?label=nuget%20latest">
+</a>
+<br/>
 
-![Open Issues](https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=is%3Aissue%20is%3Aopen&label=Open%20Issues)
+<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues">
+	<img src="https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=is%3Aissue%20is%3Aopen&label=Open%20Issues">
+</a>
 
 
 This is the first and, for now, only component using the framework. 
