@@ -4,3 +4,5 @@
   href: attributes.md
 - name: Registration by class selection
   href: class-selection.md
+- name: Working Example
+  href: example.md

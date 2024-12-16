@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DeviantCoding.Registerly.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Registerly\src\DeviantCoding.Registerly.csproj" />
   </ItemGroup>
 
 </Project>
