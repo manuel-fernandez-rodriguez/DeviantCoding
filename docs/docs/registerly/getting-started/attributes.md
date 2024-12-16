@@ -15,7 +15,7 @@ Implemented by this class:
 ```csharp
 public class GreeterService : IGreeterService
 {
-    public string Greet() => "Hello, World!"
+    public string Greet() => "Hello, World!";
 }
 ```
 
