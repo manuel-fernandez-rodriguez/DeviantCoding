@@ -9,7 +9,7 @@ DeviantCoding aims to group a set of opinionated components sharing a common cod
 <a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/releases"><img src="https://img.shields.io/github/v/release/manuel-fernandez-rodriguez/DeviantCoding?filter=Registerly*&label=published%20release"></a>&nbsp;<a href="https://nuget.org/packages/DeviantCoding.Registerly/"><img src="https://img.shields.io/nuget/v/DeviantCoding.Registerly?label=nuget%20stable"></a>&nbsp;<a href="https://int.nugettest.org/packages/DeviantCoding.Registerly/"><img src="https://img.shields.io/nuget/vpre/DeviantCoding.Registerly?label=nuget%20latest"></a>
 <br/>
 
-<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues"><img src="https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=-label%3Abug%20is%3Aissue%20is%3Aopen&label=Open%20Issues"></a>&nbsp;<img alt="GitHub issue custom search in repo" src="https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=label%3Abug%20is%3Aopen&label=Open%20bugs&color=FF0000">
+<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues?q=is%3Aissue+is%3Aopen+-label%3Abug"><img src="https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=-label%3Abug%20is%3Aissue%20is%3Aopen&label=Open%20Issues"></a>&nbsp;<a href="https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues?q=is%3Aissue+is%3Aopen+label%3Abug"><img alt="GitHub issue custom search in repo" src="https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=label%3Abug%20is%3Aopen&label=Open%20bugs&color=FF0000"></a>
 
 
 
