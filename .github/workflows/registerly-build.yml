@@ -65,10 +65,10 @@ jobs:
         DRAFT_RELEASE_NAME="$(gh release list --json name,tagName,isDraft --jq '.[] | select(.tagName=="${{ env.tag }}" and .isDraft)|.name')"
         if [ -z "${DRAFT_RELEASE_NAME}" ]
         then
-          gh release create "$tag" ./$outputfolder/*.nupkg ./$outputfolder/*.snupkg --draft ${prerelease:+"$prerelease"} --title "$title" --target ${{ github.sha }}
+          gh release create "$tag" ./$outputfolder/*.nupkg --draft ${prerelease:+"$prerelease"} --title "$title" --target ${{ github.sha }}
         else
           echo "Updating existing release $tag"
-          gh release upload "$tag" ./$outputfolder/*.nupkg ./$outputfolder/*.snupkg --clobber
+          gh release upload "$tag" ./$outputfolder/*.nupkg --clobber
           gh release edit "$tag" --target ${{ github.sha }}
         fi
       shell: bash
