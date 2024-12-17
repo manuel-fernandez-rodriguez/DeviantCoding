@@ -34,5 +34,3 @@ public class ScopedAttribute() : RegisterlyAttribute(new Scoped(), null, null);
 [AttributeUsage(AttributeTargets.Class)]
 public class ScopedAttribute<TMappingStrategy>() : RegisterlyAttribute(new Scoped(), new TMappingStrategy(), null)
     where TMappingStrategy : IMappingStrategy, new();
-
-/// <summary>

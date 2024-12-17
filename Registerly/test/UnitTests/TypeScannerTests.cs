@@ -14,7 +14,7 @@ namespace DeviantCoding.Registerly.UnitTests
 
         private readonly TypeScanner _sut = new();
         
-        private static readonly Type[] DecoratedTypes = 
+        private static readonly Type[] _decoratedTypes = 
             [
             typeof(TypeScannerClass1), typeof(TypeScannerClass2), typeof(TypeScannerClass3), 
             typeof(TypeScannerClass4)
@@ -28,7 +28,7 @@ namespace DeviantCoding.Registerly.UnitTests
                 .FromDependencyContext()
                 .Where( t => t.Name.StartsWith("TypeScannerClass"));
 
-            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+            types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
         }
 
         [Fact]
@@ -38,13 +38,13 @@ namespace DeviantCoding.Registerly.UnitTests
                 .From([typeof(TypeScannerTests).Assembly.GetName()], _ => true)
                 .Where(t => t.Name.StartsWith("TypeScannerClass"));
 
-            types.Should().OnlyContain(t => DecoratedTypes.Contains(t));
+            types.Should().OnlyContain(t => _decoratedTypes.Contains(t));
         }
 
         [Fact]
         public void Should_resolve_RegisterlyAttribute()
         {
-            foreach (var type in DecoratedTypes)
+            foreach (var type in _decoratedTypes)
             {
                 type.IsMarkedForAutoRegistration()
                     .Should().BeTrue("because {0} name is expected to be autoregistrable", type.Name);
@@ -57,7 +57,7 @@ namespace DeviantCoding.Registerly.UnitTests
         [Fact]
         public void Should_apply_AssignableTo()
         {
-            _sut.From(DecoratedTypes)
+            _sut.From(_decoratedTypes)
                 .Where(t => t.AssignableTo<ITypeScannerInterface1>())
                 .Should().OnlyContain(t => new[] { typeof(TypeScannerClass1), typeof(TypeScannerClass2) }.Contains(t));
 

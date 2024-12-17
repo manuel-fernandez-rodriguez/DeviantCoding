@@ -263,11 +263,11 @@ public static class TypeExtensions
     public static bool AssignableTo<T>(this Type target) => target.AssignableTo(typeof(T));
 
     /// <summary>
-    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) to type <typeparamref name="T"/>.
+    /// Determines whether <paramref name="target"/> is assignable (inherits or implements) to type <paramref name="type"/>
     /// </summary>
     /// <param name="target">Type to check.</param>
     /// <param name="type">Type to compare to.</param>
-    /// <returns>True if <paramref name="target"/> is assignable to <typeparamref name="T"/>.</returns>
+    /// <returns>True if <paramref name="target"/> is assignable to <paramref name="type"/>.</returns>
     /// <example>
     /// <code>
     /// bool result = typeof(MyClass).AssignableTo(typeof(IMyInterface));
