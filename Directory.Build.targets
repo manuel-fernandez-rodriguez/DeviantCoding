@@ -12,13 +12,12 @@
   <PropertyGroup
     Label="Default properties for DeviantCoding Nuget Packages"
     Condition=" $(IsDeviantCodingNugetPackage) == true ">
-
     <AddSourceLinkSupport>true</AddSourceLinkSupport>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 
     <Title Condition=" '$(Title)' == ''">$(AssemblyName)</Title>
     <PackageId Condition=" '$(PackageId)' == ''">$(AssemblyName)</PackageId>
@@ -101,12 +100,9 @@
     Label="SourceLink Support"
     Condition=" $(AddSourceLinkSupport) == true ">
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IncludeSymbols>True</IncludeSymbols>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <DebugType>embedded</DebugType>
+    <DebugType>embedded</DebugType>    
   </PropertyGroup>
 
   <ItemGroup
