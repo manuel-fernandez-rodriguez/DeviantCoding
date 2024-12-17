@@ -10,10 +10,11 @@
     <IsDeviantCodingNugetPackage>true</IsDeviantCodingNugetPackage>
     <Description>Dependency injection made easy</Description>
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
-    <Version>1.1.3-beta</Version>
+    <Version>1.1.4-beta</Version>
     <PackageReleaseNotes>
       Beta version for internal testing.
       Added XML documentation to package.
+      Added debug symbols to package
     </PackageReleaseNotes>
     <PackageProjectUrl>https://manuel-fernandez-rodriguez.github.io/DeviantCoding/docs/registerly/introduction.html</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
