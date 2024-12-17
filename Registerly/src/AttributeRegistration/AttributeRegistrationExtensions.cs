@@ -6,6 +6,10 @@ using Microsoft.Extensions.Hosting;
 namespace Microsoft.Extensions.DependencyInjection;
 #pragma warning restore IDE0130 // Namespace does not match folder structure
 
+/// <summary>
+/// Extension methods to help on registering classes marke by 
+/// <see cref="DeviantCoding.Registerly.AttributeRegistration.RegisterlyAttribute"/> derived attributes
+/// </summary>
 public static class AttributeRegistrationExtensions
 {
     /// <summary>
@@ -104,7 +108,7 @@ public static class AttributeRegistrationExtensions
     /// <see cref="DeviantCoding.Registerly.AttributeRegistration.RegisterlyAttribute"/> derived attributes
     /// and registers them in the target service collection.
     /// </summary>
-    /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
+    /// <param name="services"><see cref="IServiceCollection"/> to register classes in</param>
     /// <param name="assemblies">List of <see cref="Assembly"/> to search in.</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
     /// <example>
@@ -121,7 +125,7 @@ public static class AttributeRegistrationExtensions
     /// <see cref="DeviantCoding.Registerly.AttributeRegistration.RegisterlyAttribute"/> derived attributes
     /// and registers them in the target service collection.
     /// </summary>
-    /// <param name="app"><see cref="IHostApplicationBuilder"/> to register classes in</param>
+    /// <param name="services"><see cref="IServiceCollection"/> to register classes in</param>
     /// <param name="assemblies">List of <see cref="Assembly"/> to search in.</param>
     /// <returns>The same <see cref="IHostApplicationBuilder"/> it was invoked on</returns>
     /// <example>

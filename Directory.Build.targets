@@ -18,6 +18,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 
     <Title Condition=" '$(Title)' == ''">$(AssemblyName)</Title>
     <PackageId Condition=" '$(PackageId)' == ''">$(AssemblyName)</PackageId>
