@@ -11,7 +11,7 @@ DeviantCoding aims to group a set of opinionated components sharing a common cod
 [![NuGet Version](https://img.shields.io/nuget/v/DeviantCoding.Registerly?logo=nuget)](https://nuget.org/packages/DeviantCoding.Registerly/)
 
 [![Open Issues](https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=is%3Aissue%20is%3Aopen%20-label%3Abug&label=Open%20Issues)](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues?q=is%3Aissue+is%3Aopen+-label%3Abug)
-[![Open Bugs](https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=is%3Aissue%20is%3Aopen%20label%3Abug&label=Open%20Issues&color=rgb(215%2C%2058%2C%2074))](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Open Bugs](https://img.shields.io/github/issues-search/manuel-fernandez-rodriguez/DeviantCoding?query=is%3Aissue%20is%3Aopen%20label%3Abug&label=Open%20Bugs&color=rgb(215%2C%2058%2C%2074))](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 
 
