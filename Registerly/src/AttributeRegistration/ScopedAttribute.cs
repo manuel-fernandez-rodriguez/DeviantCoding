@@ -34,3 +34,22 @@ public class ScopedAttribute() : RegisterlyAttribute(new Scoped(), null, null);
 [AttributeUsage(AttributeTargets.Class)]
 public class ScopedAttribute<TMappingStrategy>() : RegisterlyAttribute(new Scoped(), new TMappingStrategy(), null)
     where TMappingStrategy : IMappingStrategy, new();
+
+/// <summary>
+/// Specifies that a class should be registered as scoped in the dependency injection container with specified mapping and registration strategies.
+/// </summary>
+/// <typeparam name="TMappingStrategy">The mapping strategy to use.</typeparam>
+/// <typeparam name="TRegistrationStrategy">The registration strategy to use.</typeparam>
+/// <example>
+/// <code>
+/// [Singleton&lt;MyMappingStrategy, MyRegistrationStrategy&gt;]
+/// public class MyScopedService
+/// {
+///     // Implementation
+/// }
+/// </code>
+/// </example>
+[AttributeUsage(AttributeTargets.Class)]
+public class ScopedAttribute<TMappingStrategy, TRegistrationStrategy>() : RegisterlyAttribute(new Scoped(), new TMappingStrategy(), new TRegistrationStrategy())
+    where TMappingStrategy : IMappingStrategy, new()
+    where TRegistrationStrategy : IRegistrationStrategy, new();
