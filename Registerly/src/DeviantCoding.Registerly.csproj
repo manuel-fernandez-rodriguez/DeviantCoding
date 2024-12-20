@@ -1,18 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>13.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget package data">
     <IsDeviantCodingNugetPackage>true</IsDeviantCodingNugetPackage>
     <Description>Dependency injection made easy</Description>
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <PackageReleaseNotes>
-      Add missing ScopedAttribute generic overload.
+      Add net standard support
     </PackageReleaseNotes>
     <PackageProjectUrl>https://manuel-fernandez-rodriguez.github.io/DeviantCoding/docs/registerly/introduction.html</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -27,6 +28,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    <PackageReference Include="PolySharp" Version="1.15.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 </Project>

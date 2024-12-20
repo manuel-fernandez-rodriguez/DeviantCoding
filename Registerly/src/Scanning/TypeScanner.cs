@@ -71,10 +71,9 @@ internal class TypeScanner : ITypeScanner
     /// </example>
     public IQueryable<Type> FromDependencyContext(DependencyContext context, Func<AssemblyName, bool> assemblyFilter, ClassFilterDelegate typeFilter)
     {
-        var assemblyNames = context.RuntimeLibraries
+        var assemblyNames = new HashSet<AssemblyName>(context.RuntimeLibraries
             .SelectMany(library => library.GetDefaultAssemblyNames(context))
-            .Where(assemblyFilter)
-            .ToHashSet();
+            .Where(assemblyFilter));
 
         return new AssemblyLoader()
             .FromAssemblyNames(assemblyNames, typeFilter);
