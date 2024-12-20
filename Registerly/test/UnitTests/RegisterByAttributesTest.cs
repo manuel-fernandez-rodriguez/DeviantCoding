@@ -66,6 +66,24 @@ public class RegisterByAttributesTest
             .Should().BeOfType<TestSingletonService>();
     }
 
+    [Fact]
+    public void CanRegisterWithCustomMappingStrategy()
+    {
+        var host = Host.CreateEmptyApplicationBuilder(new());
+
+        host.RegisterServicesByAttributes(classes => classes
+            .FromAssemblyOf<TestScopedService>()
+            .Where(c => c.Exactly<ClassImplementingTwoInterfaces>()));
+
+        var services = host.Services.BuildServiceProvider();
+
+        services.GetRequiredService<IInterface1>()
+            .Should().BeOfType<ClassImplementingTwoInterfaces>();
+
+        services.GetService<IInterface2>()
+            .Should().BeNull();
+    }
+
 
     private static void Assert(IServiceCollection services)
     {

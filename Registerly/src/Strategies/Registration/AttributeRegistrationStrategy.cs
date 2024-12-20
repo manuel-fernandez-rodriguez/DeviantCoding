@@ -48,7 +48,7 @@ public class AttributeRegistrationStrategy : IRegistrationStrategy
         foreach (var descriptor in descriptors)
         {
             GetRegistrationStrategy(descriptor)
-                .RegisterServices(serviceCollection, new[] { descriptor });
+                .RegisterServices(serviceCollection, [descriptor]);
         }
 
         return serviceCollection;
