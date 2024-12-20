@@ -24,18 +24,19 @@ internal class AttributeMappingStrategy : IMappingStrategy
                     yield return serviceDescriptor;
                 }
             }
-
-            if (implementationType.GetInterfaces().Length != 0)
+            else if (implementationType.GetInterfaces().Length != 0)
             {
                 foreach (var serviceDescriptor in _asImplementedInterfaces.Map([implementationType], lifetimeStrategy))
                 {
                     yield return serviceDescriptor;
                 }
             }
-
-            foreach (var serviceDescriptor in _asSelf.Map([implementationType], lifetimeStrategy))
+            else
             {
-                yield return serviceDescriptor;
+                foreach (var serviceDescriptor in _asSelf.Map([implementationType], lifetimeStrategy))
+                {
+                    yield return serviceDescriptor;
+                }
             }
         }
     }

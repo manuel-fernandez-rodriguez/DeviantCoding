@@ -11,9 +11,9 @@
     <IsDeviantCodingNugetPackage>true</IsDeviantCodingNugetPackage>
     <Description>Dependency injection made easy</Description>
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <PackageReleaseNotes>
-      Add net standard support
+      Fix bug in attributes registration with custom strategy
     </PackageReleaseNotes>
     <PackageProjectUrl>https://manuel-fernandez-rodriguez.github.io/DeviantCoding/docs/registerly/introduction.html</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>

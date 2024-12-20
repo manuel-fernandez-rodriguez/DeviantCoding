@@ -35,3 +35,11 @@ public class TestSingletonService(TestServiceDependency serviceDependency) : ISi
     private readonly TestServiceDependency _serviceDependency = serviceDependency;
 #pragma warning restore IDE0052 // Remove unread private members
 }
+
+public interface IInterface1 { }
+public interface IInterface2 { }
+
+[Scoped<As<IInterface1>>]
+public class ClassImplementingTwoInterfaces : IInterface1, IInterface2
+{
+}
