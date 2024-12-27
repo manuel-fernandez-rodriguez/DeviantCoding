@@ -33,7 +33,7 @@ public class AsSelf : IMappingStrategy
     {
         foreach (var implementationType in implementationTypes)
         {
-            yield return new ServiceDescriptor(implementationType, implementationType, lifetimeStrategy.Map(implementationType));
+            yield return ServiceDescriptorFactory.Create(implementationType, implementationType, lifetimeStrategy);
         }
     }
 }
