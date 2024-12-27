@@ -1,0 +1,8 @@
+- name: Filtering Classes to Register
+  href: filtering-classes.md
+- name: Configuring Class Registration
+  href: configuring-registration.md
+- name: Using a Factory
+  href: using-a-factory.md
+- name: Open Generics
+  href: open-generics.md
