@@ -52,7 +52,7 @@ public class As(Type serviceType) : IMappingStrategy
     {
         foreach (var implementationType in implementationTypes)
         {
-            yield return new ServiceDescriptor(serviceType, implementationType, lifetimeStrategy.Map(implementationType));
+            yield return ServiceDescriptorFactory.Create(serviceType, implementationType, lifetimeStrategy);
         }
     }
 }

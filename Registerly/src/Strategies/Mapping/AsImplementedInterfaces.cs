@@ -41,7 +41,7 @@ public class AsImplementedInterfaces : IMappingStrategy
             var services = implementationType.GetInterfaces();
             foreach (var service in services)
             {
-                yield return new ServiceDescriptor(service, implementationType, lifetimeStrategy.Map(implementationType));
+                yield return ServiceDescriptorFactory.Create(service, implementationType, lifetimeStrategy);
             }
         }
     }

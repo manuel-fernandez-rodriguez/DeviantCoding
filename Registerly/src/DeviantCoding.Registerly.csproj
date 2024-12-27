@@ -11,9 +11,9 @@
     <IsDeviantCodingNugetPackage>true</IsDeviantCodingNugetPackage>
     <Description>Dependency injection made easy</Description>
     <PackageTags>DI;Dependency;Injection;</PackageTags> 
-    <Version>1.2.2</Version>
+    <Version>1.3.0</Version>
     <PackageReleaseNotes>
-      Fix bug in attributes registration with custom strategy
+      Add support for open generic interfaces registration
     </PackageReleaseNotes>
     <PackageProjectUrl>https://manuel-fernandez-rodriguez.github.io/DeviantCoding/docs/registerly/introduction.html</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
