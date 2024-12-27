@@ -1,4 +1,4 @@
-name: Publish Registerly
+name: Registerly -> Publish
 concurrency: Registerly
 
 on:
