@@ -4,6 +4,6 @@
   href: getting-started/toc.yml
   expanded: true
 - name: Advanced Registration
-  href: advanced-registration.md
+  href: advanced-registration/toc.yml
 - name: Custom Strategies
   href: custom-strategies.md

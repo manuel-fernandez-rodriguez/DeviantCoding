@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeviantCoding.Registerly" Version="1.2.2" />
+    <ProjectReference Include="..\..\..\..\..\Registerly\src\DeviantCoding.Registerly.csproj" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
 
