@@ -2,7 +2,7 @@
 
 ## Strategy Pattern
 Under the hood, most of what we have been seeing in the preceding sections
-is implemented using dierent `Strategies`.
+is implemented using different `Strategies`.
 
 There are 3 main kinds of strategies:
 
