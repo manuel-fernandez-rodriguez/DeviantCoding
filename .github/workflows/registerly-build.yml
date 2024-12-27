@@ -1,4 +1,4 @@
-name: Build Registerly
+name: Registerly -> Build
 concurrency: Registerly
 
 on:
