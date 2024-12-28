@@ -48,5 +48,5 @@ Spider
 The `Where` method  receives a `Func<Type, bool>` predicate, so we can use any C# expression to filter 
 the classes to register.
 
-`Where`, and the provided extension methods on type, are some powerful tools which allow us to
+`Where`, and the provided extension methods on `System.Type`, are some powerful tools which allow us to
 fulfill most filtering requirements we might encounter.
