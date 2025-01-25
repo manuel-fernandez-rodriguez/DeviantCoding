@@ -1,7 +1,5 @@
 # Registerly
 
-
-## Registerly
 [![Build](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-build.yml?logo=github&label=Build)](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/actions/workflows/registerly-build.yml)
 [![Release](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-publish.yml?logo=github&label=Release)](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/actions/workflows/registerly-publish.yml)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/manuel-fernandez-rodriguez/DeviantCoding/registerly-upload.yml?logo=github&label=Deploy)](https://github.com/manuel-fernandez-rodriguez/DeviantCoding/actions/workflows/registerly-upload.yml)
